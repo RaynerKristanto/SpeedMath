@@ -12,18 +12,27 @@ const { width } = Dimensions.get('window');
 interface SettingsScreenProps {
   currentTimeLimit: number;
   onTimeLimitChange: (timeLimit: number) => void;
+  trueButtonOnLeft: boolean;
+  onButtonLayoutChange: (trueOnLeft: boolean) => void;
   onBack: () => void;
 }
 
 export const SettingsScreen: React.FC<SettingsScreenProps> = ({
   currentTimeLimit,
   onTimeLimitChange,
+  trueButtonOnLeft,
+  onButtonLayoutChange,
   onBack,
 }) => {
   const timeLimitOptions = [
     { label: '1 Second', value: 1000 },
     { label: '2 Seconds', value: 2000 },
     { label: '3 Seconds', value: 3000 },
+  ];
+
+  const buttonLayoutOptions = [
+    { label: 'True on Left', value: true },
+    { label: 'True on Right', value: false },
   ];
 
   return (
@@ -56,6 +65,41 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                 {option.label}
               </Text>
               {currentTimeLimit === option.value && (
+                <View style={styles.checkmark}>
+                  <Text style={styles.checkmarkText}>✓</Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Button Layout</Text>
+        <Text style={styles.sectionDescription}>
+          Position of True and False buttons
+        </Text>
+
+        <View style={styles.optionsContainer}>
+          {buttonLayoutOptions.map((option) => (
+            <TouchableOpacity
+              key={option.label}
+              style={[
+                styles.optionButton,
+                trueButtonOnLeft === option.value && styles.optionButtonSelected,
+              ]}
+              onPress={() => onButtonLayoutChange(option.value)}
+              activeOpacity={0.7}
+            >
+              <Text
+                style={[
+                  styles.optionText,
+                  trueButtonOnLeft === option.value && styles.optionTextSelected,
+                ]}
+              >
+                {option.label}
+              </Text>
+              {trueButtonOnLeft === option.value && (
                 <View style={styles.checkmark}>
                   <Text style={styles.checkmarkText}>✓</Text>
                 </View>

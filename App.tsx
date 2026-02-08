@@ -4,8 +4,6 @@ import { View, StyleSheet } from 'react-native';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { GameScreen } from './src/screens/GameScreen';
 import { GameOverScreen } from './src/screens/GameOverScreen';
-import { MultiplayerModeSelectScreen } from './src/screens/MultiplayerModeSelectScreen';
-import { MultiplayerGameScreen } from './src/screens/MultiplayerGameScreen';
 import { CompetitiveMultiplayerGameScreen } from './src/screens/CompetitiveMultiplayerGameScreen';
 import { MultiplayerGameOverScreen } from './src/screens/MultiplayerGameOverScreen';
 import { SettingsScreen } from './src/screens/SettingsScreen';
@@ -14,8 +12,6 @@ type Screen =
   | 'home'
   | 'game'
   | 'gameOver'
-  | 'multiplayerModeSelect'
-  | 'multiplayerCoop'
   | 'multiplayerCompetitive'
   | 'multiplayerGameOver'
   | 'settings';
@@ -25,10 +21,8 @@ export default function App() {
   const [finalScore, setFinalScore] = useState(0);
   const [player1Score, setPlayer1Score] = useState(0);
   const [player2Score, setPlayer2Score] = useState(0);
-  const [lastMultiplayerMode, setLastMultiplayerMode] = useState<
-    'multiplayerCoop' | 'multiplayerCompetitive'
-  >('multiplayerCoop');
   const [timeLimit, setTimeLimit] = useState(1000);
+  const [trueButtonOnLeft, setTrueButtonOnLeft] = useState(true);
 
   const handleStartGame = () => {
     setCurrentScreen('game');
@@ -48,16 +42,6 @@ export default function App() {
   };
 
   const handleMultiplayer = () => {
-    setCurrentScreen('multiplayerModeSelect');
-  };
-
-  const handleSelectCoOp = () => {
-    setLastMultiplayerMode('multiplayerCoop');
-    setCurrentScreen('multiplayerCoop');
-  };
-
-  const handleSelectCompetitive = () => {
-    setLastMultiplayerMode('multiplayerCompetitive');
     setCurrentScreen('multiplayerCompetitive');
   };
 
@@ -68,7 +52,7 @@ export default function App() {
   };
 
   const handleMultiplayerPlayAgain = () => {
-    setCurrentScreen(lastMultiplayerMode);
+    setCurrentScreen('multiplayerCompetitive');
   };
 
   const handleSettings = () => {
@@ -77,6 +61,10 @@ export default function App() {
 
   const handleTimeLimitChange = (newTimeLimit: number) => {
     setTimeLimit(newTimeLimit);
+  };
+
+  const handleButtonLayoutChange = (trueOnLeft: boolean) => {
+    setTrueButtonOnLeft(trueOnLeft);
   };
 
   const renderScreen = () => {
@@ -90,7 +78,7 @@ export default function App() {
           />
         );
       case 'game':
-        return <GameScreen onGameOver={handleGameOver} timeLimit={timeLimit} />;
+        return <GameScreen onGameOver={handleGameOver} timeLimit={timeLimit} trueButtonOnLeft={trueButtonOnLeft} />;
       case 'gameOver':
         return (
           <GameOverScreen
@@ -99,26 +87,12 @@ export default function App() {
             onBackToMenu={handleBackToMenu}
           />
         );
-      case 'multiplayerModeSelect':
-        return (
-          <MultiplayerModeSelectScreen
-            onSelectCoOp={handleSelectCoOp}
-            onSelectCompetitive={handleSelectCompetitive}
-            onBack={handleBackToMenu}
-          />
-        );
-      case 'multiplayerCoop':
-        return (
-          <MultiplayerGameScreen
-            onGameOver={handleMultiplayerGameOver}
-            timeLimit={timeLimit}
-          />
-        );
       case 'multiplayerCompetitive':
         return (
           <CompetitiveMultiplayerGameScreen
             onGameOver={handleMultiplayerGameOver}
             timeLimit={timeLimit}
+            trueButtonOnLeft={trueButtonOnLeft}
           />
         );
       case 'multiplayerGameOver':
@@ -135,6 +109,8 @@ export default function App() {
           <SettingsScreen
             currentTimeLimit={timeLimit}
             onTimeLimitChange={handleTimeLimitChange}
+            trueButtonOnLeft={trueButtonOnLeft}
+            onButtonLayoutChange={handleButtonLayoutChange}
             onBack={handleBackToMenu}
           />
         );

@@ -15,9 +15,10 @@ const { width, height } = Dimensions.get('window');
 interface GameScreenProps {
   onGameOver: (finalScore: number) => void;
   timeLimit: number;
+  trueButtonOnLeft: boolean;
 }
 
-export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver, timeLimit }) => {
+export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver, timeLimit, trueButtonOnLeft }) => {
   const [equation, setEquation] = useState<Equation>(generateEquation());
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(timeLimit);
@@ -123,21 +124,43 @@ export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver, timeLimit })
 
       {/* True/False Buttons */}
       <View style={styles.buttonsContainer}>
-        <TouchableOpacity
-          style={[styles.button, styles.trueButton]}
-          onPress={() => handleAnswer(true)}
-          activeOpacity={0.7}
-        >
-          <Text style={styles.buttonText}>TRUE</Text>
-        </TouchableOpacity>
+        {trueButtonOnLeft ? (
+          <>
+            <TouchableOpacity
+              style={[styles.button, styles.trueButton]}
+              onPress={() => handleAnswer(true)}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.buttonText}>TRUE</Text>
+            </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[styles.button, styles.falseButton]}
-          onPress={() => handleAnswer(false)}
-          activeOpacity={0.7}
-        >
-          <Text style={styles.buttonText}>FALSE</Text>
-        </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, styles.falseButton]}
+              onPress={() => handleAnswer(false)}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.buttonText}>FALSE</Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <>
+            <TouchableOpacity
+              style={[styles.button, styles.falseButton]}
+              onPress={() => handleAnswer(false)}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.buttonText}>FALSE</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.button, styles.trueButton]}
+              onPress={() => handleAnswer(true)}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.buttonText}>TRUE</Text>
+            </TouchableOpacity>
+          </>
+        )}
       </View>
     </View>
   );

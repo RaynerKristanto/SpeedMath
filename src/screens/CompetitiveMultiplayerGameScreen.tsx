@@ -15,11 +15,12 @@ const { width } = Dimensions.get('window');
 interface CompetitiveMultiplayerGameScreenProps {
   onGameOver: (player1Score: number, player2Score: number) => void;
   timeLimit: number;
+  trueButtonOnLeft: boolean;
 }
 
 export const CompetitiveMultiplayerGameScreen: React.FC<
   CompetitiveMultiplayerGameScreenProps
-> = ({ onGameOver, timeLimit }) => {
+> = ({ onGameOver, timeLimit, trueButtonOnLeft }) => {
   // Initial shared equation (difficulty 0)
   const initialEquation = generateEquation(0);
 
@@ -235,23 +236,47 @@ export const CompetitiveMultiplayerGameScreen: React.FC<
         </View>
 
         <View style={styles.buttonsContainer}>
-          <TouchableOpacity
-            style={[styles.button, styles.trueButton, !p2Active && styles.buttonDisabled]}
-            onPress={() => handleAnswer(2, true)}
-            activeOpacity={0.7}
-            disabled={!p2Active}
-          >
-            <Text style={styles.buttonText}>TRUE</Text>
-          </TouchableOpacity>
+          {trueButtonOnLeft ? (
+            <>
+              <TouchableOpacity
+                style={[styles.button, styles.trueButton, !p2Active && styles.buttonDisabled]}
+                onPress={() => handleAnswer(2, true)}
+                activeOpacity={0.7}
+                disabled={!p2Active}
+              >
+                <Text style={styles.buttonText}>TRUE</Text>
+              </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.button, styles.falseButton, !p2Active && styles.buttonDisabled]}
-            onPress={() => handleAnswer(2, false)}
-            activeOpacity={0.7}
-            disabled={!p2Active}
-          >
-            <Text style={styles.buttonText}>FALSE</Text>
-          </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.button, styles.falseButton, !p2Active && styles.buttonDisabled]}
+                onPress={() => handleAnswer(2, false)}
+                activeOpacity={0.7}
+                disabled={!p2Active}
+              >
+                <Text style={styles.buttonText}>FALSE</Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <>
+              <TouchableOpacity
+                style={[styles.button, styles.falseButton, !p2Active && styles.buttonDisabled]}
+                onPress={() => handleAnswer(2, false)}
+                activeOpacity={0.7}
+                disabled={!p2Active}
+              >
+                <Text style={styles.buttonText}>FALSE</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.button, styles.trueButton, !p2Active && styles.buttonDisabled]}
+                onPress={() => handleAnswer(2, true)}
+                activeOpacity={0.7}
+                disabled={!p2Active}
+              >
+                <Text style={styles.buttonText}>TRUE</Text>
+              </TouchableOpacity>
+            </>
+          )}
         </View>
       </View>
 
@@ -305,23 +330,47 @@ export const CompetitiveMultiplayerGameScreen: React.FC<
         </View>
 
         <View style={styles.buttonsContainer}>
-          <TouchableOpacity
-            style={[styles.button, styles.trueButton, !p1Active && styles.buttonDisabled]}
-            onPress={() => handleAnswer(1, true)}
-            activeOpacity={0.7}
-            disabled={!p1Active}
-          >
-            <Text style={styles.buttonText}>TRUE</Text>
-          </TouchableOpacity>
+          {trueButtonOnLeft ? (
+            <>
+              <TouchableOpacity
+                style={[styles.button, styles.trueButton, !p1Active && styles.buttonDisabled]}
+                onPress={() => handleAnswer(1, true)}
+                activeOpacity={0.7}
+                disabled={!p1Active}
+              >
+                <Text style={styles.buttonText}>TRUE</Text>
+              </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.button, styles.falseButton, !p1Active && styles.buttonDisabled]}
-            onPress={() => handleAnswer(1, false)}
-            activeOpacity={0.7}
-            disabled={!p1Active}
-          >
-            <Text style={styles.buttonText}>FALSE</Text>
-          </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.button, styles.falseButton, !p1Active && styles.buttonDisabled]}
+                onPress={() => handleAnswer(1, false)}
+                activeOpacity={0.7}
+                disabled={!p1Active}
+              >
+                <Text style={styles.buttonText}>FALSE</Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <>
+              <TouchableOpacity
+                style={[styles.button, styles.falseButton, !p1Active && styles.buttonDisabled]}
+                onPress={() => handleAnswer(1, false)}
+                activeOpacity={0.7}
+                disabled={!p1Active}
+              >
+                <Text style={styles.buttonText}>FALSE</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.button, styles.trueButton, !p1Active && styles.buttonDisabled]}
+                onPress={() => handleAnswer(1, true)}
+                activeOpacity={0.7}
+                disabled={!p1Active}
+              >
+                <Text style={styles.buttonText}>TRUE</Text>
+              </TouchableOpacity>
+            </>
+          )}
         </View>
       </View>
     </View>
