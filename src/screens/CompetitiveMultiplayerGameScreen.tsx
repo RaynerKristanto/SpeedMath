@@ -14,18 +14,19 @@ const { width } = Dimensions.get('window');
 
 interface CompetitiveMultiplayerGameScreenProps {
   onGameOver: (player1Score: number, player2Score: number) => void;
+  timeLimit: number;
 }
 
 export const CompetitiveMultiplayerGameScreen: React.FC<
   CompetitiveMultiplayerGameScreenProps
-> = ({ onGameOver }) => {
+> = ({ onGameOver, timeLimit }) => {
   // Initial shared equation (difficulty 0)
   const initialEquation = generateEquation(0);
 
   // Player 1 state
   const [p1Equation, setP1Equation] = useState<Equation>(initialEquation);
   const [p1Score, setP1Score] = useState(0);
-  const [p1TimeLeft, setP1TimeLeft] = useState(1000);
+  const [p1TimeLeft, setP1TimeLeft] = useState(timeLimit);
   const [p1IsFirstQuestion, setP1IsFirstQuestion] = useState(true);
   const [p1Active, setP1Active] = useState(true);
   const p1TimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -34,7 +35,7 @@ export const CompetitiveMultiplayerGameScreen: React.FC<
   // Player 2 state
   const [p2Equation, setP2Equation] = useState<Equation>(initialEquation);
   const [p2Score, setP2Score] = useState(0);
-  const [p2TimeLeft, setP2TimeLeft] = useState(1000);
+  const [p2TimeLeft, setP2TimeLeft] = useState(timeLimit);
   const [p2IsFirstQuestion, setP2IsFirstQuestion] = useState(true);
   const [p2Active, setP2Active] = useState(true);
   const p2TimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -52,14 +53,14 @@ export const CompetitiveMultiplayerGameScreen: React.FC<
     p1ProgressAnim.setValue(1);
     Animated.timing(p1ProgressAnim, {
       toValue: 0,
-      duration: 1000,
+      duration: timeLimit,
       useNativeDriver: false,
     }).start();
 
     const startTime = Date.now();
     p1TimerRef.current = setInterval(() => {
       const elapsed = Date.now() - startTime;
-      const remaining = Math.max(0, 1000 - elapsed);
+      const remaining = Math.max(0, timeLimit - elapsed);
       setP1TimeLeft(remaining);
 
       if (remaining <= 0) {
@@ -72,7 +73,7 @@ export const CompetitiveMultiplayerGameScreen: React.FC<
         clearInterval(p1TimerRef.current);
       }
     };
-  }, [p1Equation, p1IsFirstQuestion, p1Active]);
+  }, [p1Equation, p1IsFirstQuestion, p1Active, timeLimit]);
 
   // Player 2 timer
   useEffect(() => {
@@ -86,14 +87,14 @@ export const CompetitiveMultiplayerGameScreen: React.FC<
     p2ProgressAnim.setValue(1);
     Animated.timing(p2ProgressAnim, {
       toValue: 0,
-      duration: 1000,
+      duration: timeLimit,
       useNativeDriver: false,
     }).start();
 
     const startTime = Date.now();
     p2TimerRef.current = setInterval(() => {
       const elapsed = Date.now() - startTime;
-      const remaining = Math.max(0, 1000 - elapsed);
+      const remaining = Math.max(0, timeLimit - elapsed);
       setP2TimeLeft(remaining);
 
       if (remaining <= 0) {
@@ -106,7 +107,7 @@ export const CompetitiveMultiplayerGameScreen: React.FC<
         clearInterval(p2TimerRef.current);
       }
     };
-  }, [p2Equation, p2IsFirstQuestion, p2Active]);
+  }, [p2Equation, p2IsFirstQuestion, p2Active, timeLimit]);
 
   // Check if both players are out
   useEffect(() => {
@@ -150,7 +151,7 @@ export const CompetitiveMultiplayerGameScreen: React.FC<
         setP1Score(newP1Score);
         setP1IsFirstQuestion(false);
         setP1Equation(generateEquation(newP1Score));
-        setP1TimeLeft(1000);
+        setP1TimeLeft(timeLimit);
       } else {
         // Wrong answer - eliminate player 1
         handlePlayerLose(1);
@@ -167,7 +168,7 @@ export const CompetitiveMultiplayerGameScreen: React.FC<
         setP2Score(newP2Score);
         setP2IsFirstQuestion(false);
         setP2Equation(generateEquation(newP2Score));
-        setP2TimeLeft(1000);
+        setP2TimeLeft(timeLimit);
       } else {
         // Wrong answer - eliminate player 2
         handlePlayerLose(2);
@@ -197,7 +198,7 @@ export const CompetitiveMultiplayerGameScreen: React.FC<
                 styles.timerBar,
                 {
                   width: p2ProgressWidth,
-                  backgroundColor: p2TimeLeft < 300 ? '#ff4444' : '#4CAF50',
+                  backgroundColor: p2TimeLeft < timeLimit * 0.3 ? '#ff4444' : '#4CAF50',
                 },
               ]}
             />
@@ -267,7 +268,7 @@ export const CompetitiveMultiplayerGameScreen: React.FC<
                 styles.timerBar,
                 {
                   width: p1ProgressWidth,
-                  backgroundColor: p1TimeLeft < 300 ? '#ff4444' : '#4CAF50',
+                  backgroundColor: p1TimeLeft < timeLimit * 0.3 ? '#ff4444' : '#4CAF50',
                 },
               ]}
             />

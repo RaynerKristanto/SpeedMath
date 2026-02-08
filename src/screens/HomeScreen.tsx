@@ -4,11 +4,13 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 interface HomeScreenProps {
   onStartGame: () => void;
   onMultiplayer: () => void;
+  onSettings: () => void;
 }
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({
   onStartGame,
   onMultiplayer,
+  onSettings,
 }) => {
   return (
     <View style={styles.container}>
@@ -32,6 +34,14 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           activeOpacity={0.8}
         >
           <Text style={styles.buttonText}>Local 2-Player</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.button, styles.settingsButton]}
+          onPress={onSettings}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.buttonText}>Settings</Text>
         </TouchableOpacity>
       </View>
 
@@ -88,6 +98,9 @@ const styles = StyleSheet.create({
   },
   multiplayerButton: {
     backgroundColor: '#2196F3',
+  },
+  settingsButton: {
+    backgroundColor: '#9C27B0',
   },
   buttonText: {
     color: '#fff',

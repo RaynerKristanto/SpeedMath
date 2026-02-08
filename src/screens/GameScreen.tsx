@@ -14,12 +14,13 @@ const { width, height } = Dimensions.get('window');
 
 interface GameScreenProps {
   onGameOver: (finalScore: number) => void;
+  timeLimit: number;
 }
 
-export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver }) => {
+export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver, timeLimit }) => {
   const [equation, setEquation] = useState<Equation>(generateEquation());
   const [score, setScore] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(1000); // 1 second in milliseconds
+  const [timeLeft, setTimeLeft] = useState(timeLimit);
   const [isFirstQuestion, setIsFirstQuestion] = useState(true);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const progressAnim = useRef(new Animated.Value(1)).current;
@@ -35,10 +36,10 @@ export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver }) => {
     // Reset animation
     progressAnim.setValue(1);
 
-    // Animate from 1 to 0 over 1 second
+    // Animate from 1 to 0 over the configured time limit
     Animated.timing(progressAnim, {
       toValue: 0,
-      duration: 1000,
+      duration: timeLimit,
       useNativeDriver: false,
     }).start();
 
@@ -46,7 +47,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver }) => {
     const startTime = Date.now();
     timerRef.current = setInterval(() => {
       const elapsed = Date.now() - startTime;
-      const remaining = Math.max(0, 1000 - elapsed);
+      const remaining = Math.max(0, timeLimit - elapsed);
       setTimeLeft(remaining);
 
       if (remaining <= 0) {
@@ -59,7 +60,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver }) => {
         clearInterval(timerRef.current);
       }
     };
-  }, [equation, isFirstQuestion]);
+  }, [equation, isFirstQuestion, timeLimit]);
 
   const handleGameOver = () => {
     if (timerRef.current) {
@@ -80,7 +81,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver }) => {
       setScore(newScore);
       setIsFirstQuestion(false); // Start timer for subsequent questions
       setEquation(generateEquation(newScore));
-      setTimeLeft(1000);
+      setTimeLeft(timeLimit);
     } else {
       // Wrong answer - game over
       handleGameOver();
@@ -107,7 +108,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver }) => {
             styles.timerBar,
             {
               width: progressWidth,
-              backgroundColor: timeLeft < 300 ? '#ff4444' : '#4CAF50',
+              backgroundColor: timeLeft < timeLimit * 0.3 ? '#ff4444' : '#4CAF50',
             },
           ]}
         />

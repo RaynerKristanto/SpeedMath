@@ -8,6 +8,7 @@ import { MultiplayerModeSelectScreen } from './src/screens/MultiplayerModeSelect
 import { MultiplayerGameScreen } from './src/screens/MultiplayerGameScreen';
 import { CompetitiveMultiplayerGameScreen } from './src/screens/CompetitiveMultiplayerGameScreen';
 import { MultiplayerGameOverScreen } from './src/screens/MultiplayerGameOverScreen';
+import { SettingsScreen } from './src/screens/SettingsScreen';
 
 type Screen =
   | 'home'
@@ -16,7 +17,8 @@ type Screen =
   | 'multiplayerModeSelect'
   | 'multiplayerCoop'
   | 'multiplayerCompetitive'
-  | 'multiplayerGameOver';
+  | 'multiplayerGameOver'
+  | 'settings';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('home');
@@ -26,6 +28,7 @@ export default function App() {
   const [lastMultiplayerMode, setLastMultiplayerMode] = useState<
     'multiplayerCoop' | 'multiplayerCompetitive'
   >('multiplayerCoop');
+  const [timeLimit, setTimeLimit] = useState(1000);
 
   const handleStartGame = () => {
     setCurrentScreen('game');
@@ -68,6 +71,14 @@ export default function App() {
     setCurrentScreen(lastMultiplayerMode);
   };
 
+  const handleSettings = () => {
+    setCurrentScreen('settings');
+  };
+
+  const handleTimeLimitChange = (newTimeLimit: number) => {
+    setTimeLimit(newTimeLimit);
+  };
+
   const renderScreen = () => {
     switch (currentScreen) {
       case 'home':
@@ -75,10 +86,11 @@ export default function App() {
           <HomeScreen
             onStartGame={handleStartGame}
             onMultiplayer={handleMultiplayer}
+            onSettings={handleSettings}
           />
         );
       case 'game':
-        return <GameScreen onGameOver={handleGameOver} />;
+        return <GameScreen onGameOver={handleGameOver} timeLimit={timeLimit} />;
       case 'gameOver':
         return (
           <GameOverScreen
@@ -97,12 +109,16 @@ export default function App() {
         );
       case 'multiplayerCoop':
         return (
-          <MultiplayerGameScreen onGameOver={handleMultiplayerGameOver} />
+          <MultiplayerGameScreen
+            onGameOver={handleMultiplayerGameOver}
+            timeLimit={timeLimit}
+          />
         );
       case 'multiplayerCompetitive':
         return (
           <CompetitiveMultiplayerGameScreen
             onGameOver={handleMultiplayerGameOver}
+            timeLimit={timeLimit}
           />
         );
       case 'multiplayerGameOver':
@@ -114,11 +130,20 @@ export default function App() {
             onBackToMenu={handleBackToMenu}
           />
         );
+      case 'settings':
+        return (
+          <SettingsScreen
+            currentTimeLimit={timeLimit}
+            onTimeLimitChange={handleTimeLimitChange}
+            onBack={handleBackToMenu}
+          />
+        );
       default:
         return (
           <HomeScreen
             onStartGame={handleStartGame}
             onMultiplayer={handleMultiplayer}
+            onSettings={handleSettings}
           />
         );
     }
