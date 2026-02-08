@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Animated } from 'react-native';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { GameScreen } from './src/screens/GameScreen';
 import { GameOverScreen } from './src/screens/GameOverScreen';
 import { CompetitiveMultiplayerGameScreen } from './src/screens/CompetitiveMultiplayerGameScreen';
 import { MultiplayerGameOverScreen } from './src/screens/MultiplayerGameOverScreen';
 import { SettingsScreen } from './src/screens/SettingsScreen';
+import { LeaderboardScreen } from './src/screens/LeaderboardScreen';
+import { authenticateGameCenter } from './src/services/leaderboardService';
 
 type Screen =
   | 'home'
@@ -14,7 +16,8 @@ type Screen =
   | 'gameOver'
   | 'multiplayerCompetitive'
   | 'multiplayerGameOver'
-  | 'settings';
+  | 'settings'
+  | 'leaderboard';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('home');
@@ -23,6 +26,21 @@ export default function App() {
   const [player2Score, setPlayer2Score] = useState(0);
   const [timeLimit, setTimeLimit] = useState(1000);
   const [trueButtonOnLeft, setTrueButtonOnLeft] = useState(true);
+  const fadeAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    authenticateGameCenter();
+  }, []);
+
+  useEffect(() => {
+    // Fade in animation when screen changes
+    fadeAnim.setValue(0);
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  }, [currentScreen]);
 
   const handleStartGame = () => {
     setCurrentScreen('game');
@@ -67,6 +85,10 @@ export default function App() {
     setTrueButtonOnLeft(trueOnLeft);
   };
 
+  const handleLeaderboard = () => {
+    setCurrentScreen('leaderboard');
+  };
+
   const renderScreen = () => {
     switch (currentScreen) {
       case 'home':
@@ -75,6 +97,7 @@ export default function App() {
             onStartGame={handleStartGame}
             onMultiplayer={handleMultiplayer}
             onSettings={handleSettings}
+            onLeaderboard={handleLeaderboard}
           />
         );
       case 'game':
@@ -114,28 +137,45 @@ export default function App() {
             onBack={handleBackToMenu}
           />
         );
+      case 'leaderboard':
+        return <LeaderboardScreen onBack={handleBackToMenu} />;
       default:
         return (
           <HomeScreen
             onStartGame={handleStartGame}
             onMultiplayer={handleMultiplayer}
             onSettings={handleSettings}
+            onLeaderboard={handleLeaderboard}
           />
         );
     }
   };
 
   return (
-    <View style={styles.container}>
-      <StatusBar style="light" />
-      {renderScreen()}
+    <View style={styles.outerContainer}>
+      <View style={styles.container}>
+        <StatusBar style="light" />
+        <Animated.View style={[styles.screenContainer, { opacity: fadeAnim }]}>
+          {renderScreen()}
+        </Animated.View>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  outerContainer: {
     flex: 1,
     backgroundColor: '#1a1a2e',
+    alignItems: 'center',
+  },
+  container: {
+    flex: 1,
+    width: '100%',
+    maxWidth: 800,
+    backgroundColor: '#1a1a2e',
+  },
+  screenContainer: {
+    flex: 1,
   },
 });

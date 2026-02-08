@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
+  ScrollView,
 } from 'react-native';
 
 const { width } = Dimensions.get('window');
@@ -24,6 +25,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
   onButtonLayoutChange,
   onBack,
 }) => {
+
   const timeLimitOptions = [
     { label: '1 Second', value: 1000 },
     { label: '2 Seconds', value: 2000 },
@@ -35,11 +37,106 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
     { label: 'True on Right', value: false },
   ];
 
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: '#1a1a2e',
+    },
+    scrollContent: {
+      flexGrow: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 20,
+      minHeight: '100%',
+    },
+    contentContainer: {
+      width: '100%',
+      maxWidth: 800,
+    },
+    title: {
+      fontSize: 48,
+      fontWeight: 'bold',
+      color: '#fff',
+      textAlign: 'center',
+      marginBottom: 40,
+    },
+    section: {
+      marginBottom: 40,
+    },
+    sectionTitle: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: '#fff',
+      marginBottom: 8,
+    },
+    sectionDescription: {
+      fontSize: 16,
+      color: '#aaa',
+      marginBottom: 20,
+    },
+    optionsContainer: {
+      gap: 12,
+    },
+    optionButton: {
+      backgroundColor: '#16213e',
+      padding: 20,
+      borderRadius: 12,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      borderWidth: 2,
+      borderColor: 'transparent',
+    },
+    optionButtonSelected: {
+      backgroundColor: '#16213e',
+      borderColor: '#4CAF50',
+    },
+    optionText: {
+      fontSize: 20,
+      color: '#fff',
+      fontWeight: '600',
+    },
+    optionTextSelected: {
+      color: '#4CAF50',
+    },
+    checkmark: {
+      width: 28,
+      height: 28,
+      borderRadius: 14,
+      backgroundColor: '#4CAF50',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    checkmarkText: {
+      color: '#fff',
+      fontSize: 18,
+      fontWeight: 'bold',
+    },
+    backButton: {
+      backgroundColor: '#16213e',
+      paddingVertical: 16,
+      paddingHorizontal: 32,
+      borderRadius: 12,
+      alignItems: 'center',
+      marginTop: 20,
+    },
+    backButtonText: {
+      color: '#fff',
+      fontSize: 18,
+      fontWeight: 'bold',
+    },
+  });
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Settings</Text>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.contentContainer}>
+        <Text style={styles.title}>Settings</Text>
 
-      <View style={styles.section}>
+        <View style={styles.section}>
         <Text style={styles.sectionTitle}>Time Per Question</Text>
         <Text style={styles.sectionDescription}>
           How long players have to answer each question
@@ -116,87 +213,8 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
       >
         <Text style={styles.backButtonText}>Back to Menu</Text>
       </TouchableOpacity>
+        </View>
+      </ScrollView>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#1a1a2e',
-    padding: 20,
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 48,
-    fontWeight: 'bold',
-    color: '#fff',
-    textAlign: 'center',
-    marginBottom: 40,
-  },
-  section: {
-    marginBottom: 40,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 8,
-  },
-  sectionDescription: {
-    fontSize: 16,
-    color: '#aaa',
-    marginBottom: 20,
-  },
-  optionsContainer: {
-    gap: 12,
-  },
-  optionButton: {
-    backgroundColor: '#16213e',
-    padding: 20,
-    borderRadius: 12,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  optionButtonSelected: {
-    backgroundColor: '#0f3460',
-    borderColor: '#4CAF50',
-  },
-  optionText: {
-    fontSize: 20,
-    color: '#fff',
-    fontWeight: '600',
-  },
-  optionTextSelected: {
-    color: '#4CAF50',
-  },
-  checkmark: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: '#4CAF50',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  checkmarkText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  backButton: {
-    backgroundColor: '#16213e',
-    paddingVertical: 16,
-    paddingHorizontal: 32,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  backButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-});

@@ -222,6 +222,7 @@ const styles = StyleSheet.create({
   buttonsContainer: {
     flexDirection: 'row',
     gap: 20,
+    maxWidth: 800,
   },
   button: {
     paddingVertical: 20,

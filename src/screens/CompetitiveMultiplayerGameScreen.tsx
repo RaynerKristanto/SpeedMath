@@ -443,6 +443,7 @@ const styles = StyleSheet.create({
   buttonsContainer: {
     flexDirection: 'row',
     gap: 15,
+    maxWidth: 800,
   },
   button: {
     paddingVertical: 12,

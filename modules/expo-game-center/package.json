@@ -1,0 +1,7 @@
+{
+  "name": "expo-game-center",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "description": "Expo module for Apple Game Center integration",
+  "license": "MIT"
+}

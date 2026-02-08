@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "speed-math",
+    "name": "Speed Math",
     "slug": "speed-math",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -15,6 +15,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.anonymous.speed-math",
+      "buildNumber": "2",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }

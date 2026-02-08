@@ -98,6 +98,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-around',
     width: '100%',
+    maxWidth: 800,
     marginBottom: 40,
   },
   playerScoreBox: {
@@ -132,7 +133,9 @@ const styles = StyleSheet.create({
   },
   buttonsContainer: {
     width: '100%',
+    maxWidth: 800,
     gap: 15,
+    alignSelf: 'center',
   },
   button: {
     paddingVertical: 18,
