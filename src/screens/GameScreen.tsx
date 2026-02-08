@@ -1,0 +1,224 @@
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Dimensions,
+  Animated,
+} from 'react-native';
+import { Equation } from '../types/game';
+import { generateEquation } from '../utils/equationGenerator';
+
+const { width, height } = Dimensions.get('window');
+
+interface GameScreenProps {
+  onGameOver: (finalScore: number) => void;
+}
+
+export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver }) => {
+  const [equation, setEquation] = useState<Equation>(generateEquation());
+  const [score, setScore] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(1000); // 1 second in milliseconds
+  const [isFirstQuestion, setIsFirstQuestion] = useState(true);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const progressAnim = useRef(new Animated.Value(1)).current;
+
+  // Start timer animation
+  useEffect(() => {
+    // Skip timer for the first question
+    if (isFirstQuestion) {
+      progressAnim.setValue(1);
+      return;
+    }
+
+    // Reset animation
+    progressAnim.setValue(1);
+
+    // Animate from 1 to 0 over 1 second
+    Animated.timing(progressAnim, {
+      toValue: 0,
+      duration: 1000,
+      useNativeDriver: false,
+    }).start();
+
+    // Countdown timer
+    const startTime = Date.now();
+    timerRef.current = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const remaining = Math.max(0, 1000 - elapsed);
+      setTimeLeft(remaining);
+
+      if (remaining <= 0) {
+        handleGameOver();
+      }
+    }, 10); // Update every 10ms for smooth progress
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [equation, isFirstQuestion]);
+
+  const handleGameOver = () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+    onGameOver(score);
+  };
+
+  const handleAnswer = (userAnswer: boolean) => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+
+    // Check if answer is correct
+    if (userAnswer === equation.isCorrect) {
+      // Correct! Generate new equation
+      setScore(score + 1);
+      setIsFirstQuestion(false); // Start timer for subsequent questions
+      setEquation(generateEquation());
+      setTimeLeft(1000);
+    } else {
+      // Wrong answer - game over
+      handleGameOver();
+    }
+  };
+
+  const progressWidth = progressAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0%', '100%'],
+  });
+
+  return (
+    <View style={styles.container}>
+      {/* Score */}
+      <View style={styles.scoreContainer}>
+        <Text style={styles.scoreLabel}>Score</Text>
+        <Text style={styles.scoreValue}>{score}</Text>
+      </View>
+
+      {/* Timer Progress Bar */}
+      <View style={styles.timerBarContainer}>
+        <Animated.View
+          style={[
+            styles.timerBar,
+            {
+              width: progressWidth,
+              backgroundColor: timeLeft < 300 ? '#ff4444' : '#4CAF50',
+            },
+          ]}
+        />
+      </View>
+
+      {/* Equation Display */}
+      <View style={styles.equationContainer}>
+        <Text style={styles.equation}>
+          {equation.left} {equation.operator} {equation.right} = {equation.result}
+        </Text>
+      </View>
+
+      {/* True/False Buttons */}
+      <View style={styles.buttonsContainer}>
+        <TouchableOpacity
+          style={[styles.button, styles.trueButton]}
+          onPress={() => handleAnswer(true)}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.buttonText}>TRUE</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.button, styles.falseButton]}
+          onPress={() => handleAnswer(false)}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.buttonText}>FALSE</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#1a1a2e',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  scoreContainer: {
+    position: 'absolute',
+    top: 60,
+    alignItems: 'center',
+  },
+  scoreLabel: {
+    fontSize: 18,
+    color: '#aaa',
+    fontWeight: '600',
+  },
+  scoreValue: {
+    fontSize: 48,
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  timerBarContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 6,
+    backgroundColor: '#333',
+  },
+  timerBar: {
+    height: '100%',
+  },
+  equationContainer: {
+    backgroundColor: '#16213e',
+    padding: 40,
+    borderRadius: 20,
+    marginBottom: 60,
+    minWidth: width * 0.8,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  equation: {
+    fontSize: 42,
+    color: '#fff',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  buttonsContainer: {
+    flexDirection: 'row',
+    gap: 20,
+  },
+  button: {
+    paddingVertical: 20,
+    paddingHorizontal: 50,
+    borderRadius: 15,
+    minWidth: 140,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 5,
+  },
+  trueButton: {
+    backgroundColor: '#4CAF50',
+  },
+  falseButton: {
+    backgroundColor: '#f44336',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+});
