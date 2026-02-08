@@ -26,6 +26,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "bd3e1287-2bbb-4213-addf-69839b4e4e2d"
+      }
+    },
+    "owner": "rayner-and-friends"
   }
 }

@@ -75,10 +75,11 @@ export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver }) => {
 
     // Check if answer is correct
     if (userAnswer === equation.isCorrect) {
-      // Correct! Generate new equation
-      setScore(score + 1);
+      // Correct! Generate new equation with increased difficulty
+      const newScore = score + 1;
+      setScore(newScore);
       setIsFirstQuestion(false); // Start timer for subsequent questions
-      setEquation(generateEquation());
+      setEquation(generateEquation(newScore));
       setTimeLeft(1000);
     } else {
       // Wrong answer - game over

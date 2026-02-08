@@ -31,8 +31,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           onPress={onMultiplayer}
           activeOpacity={0.8}
         >
-          <Text style={styles.buttonText}>Multiplayer</Text>
-          <Text style={styles.comingSoon}>Coming Soon</Text>
+          <Text style={styles.buttonText}>Local 2-Player</Text>
         </TouchableOpacity>
       </View>
 
@@ -89,18 +88,11 @@ const styles = StyleSheet.create({
   },
   multiplayerButton: {
     backgroundColor: '#2196F3',
-    opacity: 0.6,
   },
   buttonText: {
     color: '#fff',
     fontSize: 24,
     fontWeight: 'bold',
-  },
-  comingSoon: {
-    color: '#fff',
-    fontSize: 12,
-    marginTop: 4,
-    opacity: 0.8,
   },
   infoContainer: {
     marginTop: 40,
