@@ -94,3 +94,38 @@ To modify the game:
 ## License
 
 MIT
+
+## Privacy Policy
+
+**Effective date:** February 8, 2026
+
+Rayner and Friends (“we,” “us,” or “our”) operates the mobile application **Speed Math** (the “App”).
+
+### Information Collection and Use
+**Speed Math does not collect, store, use, or share any personal or non-personal data.**
+
+The App does not collect:
+- Names  
+- Email addresses  
+- Device identifiers  
+- Location data  
+- Usage analytics  
+- Advertising data  
+- Any other form of user data  
+
+### Third-Party Services
+Speed Math **does not use any third-party services, SDKs, analytics tools, or advertising frameworks** that collect user data.
+
+### Children’s Privacy
+Speed Math does not knowingly collect any personal information from children under the age of 13.  
+Since no data is collected at all, no information from children or any other users is stored or processed.
+
+### Changes to This Privacy Policy
+If our data practices change in the future, this privacy policy will be updated accordingly.  
+Any changes will be reflected by updating the effective date at the top of this policy.
+
+### Contact Us
+If you have any questions about this Privacy Policy, you can contact us at:
+
+**Rayner and Friends**  
+🌐 https://github.com/RaynerKristanto/SpeedMath

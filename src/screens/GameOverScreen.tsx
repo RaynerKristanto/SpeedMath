@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Platform, ScrollView } from 'react-native';
 import { UsernameModal } from '../components/UsernameModal';
 import { submitScore, isGameCenterAuthenticated, fetchPlayerBestScore } from '../services/leaderboardService';
 import { LastEquation, GameEndReason } from './GameScreen';
@@ -115,7 +115,7 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
   });
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.gradeSection}>
         <View style={[styles.gradeBadge, { backgroundColor: gradeColor, shadowColor: gradeColor }]}>
           <Text style={styles.gradeText}>{grade}</Text>
@@ -152,7 +152,7 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
             onPress={handleShowModal}
             activeOpacity={0.8}
           >
-            <Text style={styles.buttonText}>📝 Submit to Leaderboard</Text>
+            <Text style={styles.buttonText}>📝 Submit to Local Leaderboard</Text>
           </TouchableOpacity>
         )}
 
@@ -194,13 +194,13 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
           isSubmitting={isSubmitting}
         />
       )}
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     backgroundColor: '#1a1a2e',
     justifyContent: 'center',
     alignItems: 'center',

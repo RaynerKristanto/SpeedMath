@@ -126,6 +126,9 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ timeLimit,
       <View style={styles.header}>
         <Text style={styles.title}>🏆 Leaderboard</Text>
         <Text style={styles.subtitle}>Top 10 Scores</Text>
+        <Text style={styles.disclaimer}>
+          Stored locally on this device. Clearing app data or reinstalling will reset scores. Download the iOS app for online leaderboards!
+        </Text>
       </View>
 
       <FlatList
@@ -253,6 +256,13 @@ const styles = StyleSheet.create({
     color: '#aaa',
     textAlign: 'center',
     paddingHorizontal: 40,
+  },
+  disclaimer: {
+    fontSize: 13,
+    color: '#888',
+    textAlign: 'center',
+    marginTop: 10,
+    paddingHorizontal: 20,
   },
   backButton: {
     backgroundColor: '#16213e',
