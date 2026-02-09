@@ -82,6 +82,25 @@ public class ExpoGameCenterModule: Module {
       }
     }
 
+    AsyncFunction("fetchPlayerBestScore") { (leaderboardID: String) -> [String: Any?] in
+      guard GKLocalPlayer.local.isAuthenticated else {
+        return ["score": nil, "rank": nil, "error": "Player not authenticated"]
+      }
+      do {
+        let leaderboards = try await GKLeaderboard.loadLeaderboards(IDs: [leaderboardID])
+        guard let leaderboard = leaderboards.first else {
+          return ["score": nil, "rank": nil, "error": "Leaderboard not found"]
+        }
+        let (entry, _) = try await leaderboard.loadEntries(for: [GKLocalPlayer.local], timeScope: .allTime)
+        if let entry = entry {
+          return ["score": entry.score, "rank": entry.rank, "error": nil]
+        }
+        return ["score": nil, "rank": nil, "error": nil]
+      } catch {
+        return ["score": nil, "rank": nil, "error": error.localizedDescription]
+      }
+    }
+
     AsyncFunction("showLeaderboard") { (leaderboardID: String) in
       guard GKLocalPlayer.local.isAuthenticated else {
         throw NSError(

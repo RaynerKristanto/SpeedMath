@@ -24,8 +24,6 @@ export const MultiplayerGameOverScreen: React.FC<
 
   return (
     <View style={styles.container}>
-      <Text style={styles.gameOverText}>Game Over</Text>
-
       <View style={styles.scoresContainer}>
         <View style={styles.playerScoreBox}>
           <Text style={styles.playerLabel}>Player 1</Text>

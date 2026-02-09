@@ -1,16 +1,23 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Platform, ActivityIndicator } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { UsernameModal } from '../components/UsernameModal';
-import { submitScore, isGameCenterAuthenticated } from '../services/leaderboardService';
+import { submitScore, isGameCenterAuthenticated, fetchPlayerBestScore } from '../services/leaderboardService';
+import { LastEquation, GameEndReason } from './GameScreen';
 
 interface GameOverScreenProps {
   score: number;
+  timeLimit: number;
+  lastEquation: LastEquation | null;
+  endReason: GameEndReason;
   onPlayAgain: () => void;
   onBackToMenu: () => void;
 }
 
 export const GameOverScreen: React.FC<GameOverScreenProps> = ({
   score,
+  timeLimit,
+  lastEquation,
+  endReason,
   onPlayAgain,
   onBackToMenu,
 }) => {
@@ -18,35 +25,36 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  const [bestScore, setBestScore] = useState<number | null>(null);
 
   const useGameCenter = Platform.OS === 'ios' && isGameCenterAuthenticated();
+
+  useEffect(() => {
+    if (useGameCenter) {
+      submitScore(score, undefined, timeLimit).then((result) => {
+        if (result.success) {
+          setSubmitSuccess(true);
+        } else {
+          setSubmitError(result.error || 'Failed to submit score');
+        }
+      });
+      fetchPlayerBestScore(timeLimit).then((result) => {
+        setBestScore(result.score);
+      });
+    }
+  }, []);
 
   const handleSubmitScore = async (username: string) => {
     setIsSubmitting(true);
     setSubmitError('');
 
-    const result = await submitScore(score, username);
+    const result = await submitScore(score, username, timeLimit);
 
     setIsSubmitting(false);
 
     if (result.success) {
       setSubmitSuccess(true);
       setShowUsernameModal(false);
-    } else {
-      setSubmitError(result.error || 'Failed to submit score');
-    }
-  };
-
-  const handleGameCenterSubmit = async () => {
-    setIsSubmitting(true);
-    setSubmitError('');
-
-    const result = await submitScore(score);
-
-    setIsSubmitting(false);
-
-    if (result.success) {
-      setSubmitSuccess(true);
     } else {
       setSubmitError(result.error || 'Failed to submit score');
     }
@@ -118,24 +126,26 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
       <View style={styles.scoreContainer}>
         <Text style={styles.scoreLabel}>Final Score</Text>
         <Text style={styles.scoreValue}>{score}</Text>
+        {bestScore !== null && (
+          <Text style={styles.bestScoreText}>Best: {bestScore}</Text>
+        )}
       </View>
 
-      <View style={styles.buttonsContainer}>
-        {!submitSuccess && useGameCenter && (
-          <TouchableOpacity
-            style={[styles.button, styles.submitButton, isSubmitting && styles.buttonDisabled]}
-            onPress={handleGameCenterSubmit}
-            disabled={isSubmitting}
-            activeOpacity={0.8}
-          >
-            {isSubmitting ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text style={styles.buttonText}>🏆 Submit to Game Center</Text>
-            )}
-          </TouchableOpacity>
-        )}
+      {lastEquation && (
+        <View style={styles.lastEquationContainer}>
+          <Text style={styles.endReasonText}>
+            {endReason === 'timeout' ? '⏱️ Time ran out' : '❌ Wrong answer'}
+          </Text>
+          <Text style={styles.lastEquationText}>
+            {lastEquation.left} {lastEquation.operator} {lastEquation.right} = {lastEquation.result}
+          </Text>
+          <Text style={styles.correctAnswerText}>
+            {lastEquation.isCorrect ? 'This was TRUE' : 'This was FALSE'}
+          </Text>
+        </View>
+      )}
 
+      <View style={styles.buttonsContainer}>
         {!submitSuccess && !useGameCenter && (
           <TouchableOpacity
             style={[styles.button, styles.submitButton]}
@@ -146,13 +156,13 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
           </TouchableOpacity>
         )}
 
-        {submitSuccess && (
+        {submitSuccess && !useGameCenter && (
           <View style={styles.successContainer}>
             <Text style={styles.successText}>✅ Score submitted!</Text>
           </View>
         )}
 
-        {submitError && (
+        {submitError && !useGameCenter && (
           <View style={styles.errorContainer}>
             <Text style={styles.errorText}>{submitError}</Text>
           </View>
@@ -218,7 +228,11 @@ const styles = StyleSheet.create({
     fontSize: 72,
     fontWeight: 'bold',
     color: '#fff',
-    marginBottom: 20,
+  },
+  bestScoreText: {
+    fontSize: 16,
+    color: '#aaa',
+    marginTop: 8,
   },
   gradeBadge: {
     paddingVertical: 14,
@@ -245,6 +259,30 @@ const styles = StyleSheet.create({
     color: '#aaa',
     fontWeight: '600',
     textAlign: 'center',
+  },
+  lastEquationContainer: {
+    backgroundColor: '#16213e',
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginBottom: 30,
+    minWidth: 280,
+  },
+  endReasonText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#ff8a65',
+    marginBottom: 8,
+  },
+  lastEquationText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 4,
+  },
+  correctAnswerText: {
+    fontSize: 14,
+    color: '#aaa',
   },
   buttonsContainer: {
     width: '100%',

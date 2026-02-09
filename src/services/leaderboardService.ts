@@ -4,7 +4,10 @@ import type { AuthResult, SubmitResult } from '../../modules/expo-game-center';
 import * as localLeaderboard from './localLeaderboardService';
 import type { LeaderboardEntry } from '../types/leaderboard';
 
-const GAME_CENTER_LEADERBOARD_ID = 'scores';
+const getLeaderboardID = (timeLimit?: number): string => {
+  if (timeLimit === 2000) return 'scores_2s';
+  return 'scores';
+};
 
 const isGameCenterAvailable = (): boolean => {
   return Platform.OS === 'ios' && GameCenter != null;
@@ -40,13 +43,14 @@ export const getPlayerAlias = (): string | null => {
 
 export const submitScore = async (
   score: number,
-  username?: string
+  username?: string,
+  timeLimit?: number
 ): Promise<{ success: boolean; error?: string }> => {
   if (isGameCenterAvailable() && isGameCenterAuthenticated()) {
     try {
       const result: SubmitResult = await GameCenter!.submitScore(
         score,
-        GAME_CENTER_LEADERBOARD_ID
+        getLeaderboardID(timeLimit)
       );
       return { success: result.success, error: result.error ?? undefined };
     } catch (error: any) {
@@ -63,10 +67,24 @@ export const submitScore = async (
   return localLeaderboard.submitScore(username, score);
 };
 
-export const showNativeLeaderboard = async (): Promise<boolean> => {
+export const fetchPlayerBestScore = async (
+  timeLimit?: number
+): Promise<{ score: number | null; rank: number | null }> => {
   if (isGameCenterAvailable() && isGameCenterAuthenticated()) {
     try {
-      await GameCenter!.showLeaderboard(GAME_CENTER_LEADERBOARD_ID);
+      const result = await GameCenter!.fetchPlayerBestScore(getLeaderboardID(timeLimit));
+      return { score: result.score, rank: result.rank };
+    } catch {
+      return { score: null, rank: null };
+    }
+  }
+  return { score: null, rank: null };
+};
+
+export const showNativeLeaderboard = async (timeLimit?: number): Promise<boolean> => {
+  if (isGameCenterAvailable() && isGameCenterAuthenticated()) {
+    try {
+      await GameCenter!.showLeaderboard(getLeaderboardID(timeLimit));
       return true;
     } catch (error) {
       console.warn('Failed to show Game Center leaderboard:', error);

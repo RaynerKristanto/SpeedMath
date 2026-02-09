@@ -29,7 +29,6 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
   const timeLimitOptions = [
     { label: '1 Second', value: 1000 },
     { label: '2 Seconds', value: 2000 },
-    { label: '3 Seconds', value: 3000 },
   ];
 
   const buttonLayoutOptions = [

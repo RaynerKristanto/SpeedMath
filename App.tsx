@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { View, StyleSheet, Animated } from 'react-native';
 import { HomeScreen } from './src/screens/HomeScreen';
-import { GameScreen } from './src/screens/GameScreen';
+import { GameScreen, LastEquation, GameEndReason } from './src/screens/GameScreen';
 import { GameOverScreen } from './src/screens/GameOverScreen';
 import { CompetitiveMultiplayerGameScreen } from './src/screens/CompetitiveMultiplayerGameScreen';
 import { MultiplayerGameOverScreen } from './src/screens/MultiplayerGameOverScreen';
@@ -22,6 +22,8 @@ type Screen =
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('home');
   const [finalScore, setFinalScore] = useState(0);
+  const [lastEquation, setLastEquation] = useState<LastEquation | null>(null);
+  const [endReason, setEndReason] = useState<GameEndReason>('timeout');
   const [player1Score, setPlayer1Score] = useState(0);
   const [player2Score, setPlayer2Score] = useState(0);
   const [timeLimit, setTimeLimit] = useState(1000);
@@ -46,8 +48,10 @@ export default function App() {
     setCurrentScreen('game');
   };
 
-  const handleGameOver = (score: number) => {
+  const handleGameOver = (score: number, equation: LastEquation, reason: GameEndReason) => {
     setFinalScore(score);
+    setLastEquation(equation);
+    setEndReason(reason);
     setCurrentScreen('gameOver');
   };
 
@@ -106,6 +110,9 @@ export default function App() {
         return (
           <GameOverScreen
             score={finalScore}
+            timeLimit={timeLimit}
+            lastEquation={lastEquation}
+            endReason={endReason}
             onPlayAgain={handlePlayAgain}
             onBackToMenu={handleBackToMenu}
           />
@@ -138,7 +145,7 @@ export default function App() {
           />
         );
       case 'leaderboard':
-        return <LeaderboardScreen onBack={handleBackToMenu} />;
+        return <LeaderboardScreen timeLimit={timeLimit} onBack={handleBackToMenu} />;
       default:
         return (
           <HomeScreen

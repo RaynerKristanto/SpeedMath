@@ -446,10 +446,10 @@ const styles = StyleSheet.create({
     maxWidth: 800,
   },
   button: {
-    paddingVertical: 12,
-    paddingHorizontal: 30,
-    borderRadius: 12,
-    minWidth: 100,
+    paddingVertical: 20,
+    paddingHorizontal: 50,
+    borderRadius: 15,
+    minWidth: 140,
     alignItems: 'center',
   },
   trueButton: {
@@ -463,7 +463,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: 24,
     fontWeight: 'bold',
   },
   divider: {

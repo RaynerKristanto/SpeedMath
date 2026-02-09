@@ -12,8 +12,18 @@ import { generateEquation } from '../utils/equationGenerator';
 
 const { width, height } = Dimensions.get('window');
 
+export type GameEndReason = 'timeout' | 'wrong';
+
+export interface LastEquation {
+  left: number;
+  operator: string;
+  right: number;
+  result: number;
+  isCorrect: boolean;
+}
+
 interface GameScreenProps {
-  onGameOver: (finalScore: number) => void;
+  onGameOver: (finalScore: number, lastEquation: LastEquation, endReason: GameEndReason) => void;
   timeLimit: number;
   trueButtonOnLeft: boolean;
 }
@@ -52,7 +62,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver, timeLimit, t
       setTimeLeft(remaining);
 
       if (remaining <= 0) {
-        handleGameOver();
+        handleGameOver('timeout');
       }
     }, 10); // Update every 10ms for smooth progress
 
@@ -63,11 +73,11 @@ export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver, timeLimit, t
     };
   }, [equation, isFirstQuestion, timeLimit]);
 
-  const handleGameOver = () => {
+  const handleGameOver = (reason: GameEndReason) => {
     if (timerRef.current) {
       clearInterval(timerRef.current);
     }
-    onGameOver(score);
+    onGameOver(score, equation, reason);
   };
 
   const handleAnswer = (userAnswer: boolean) => {
@@ -85,7 +95,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver, timeLimit, t
       setTimeLeft(timeLimit);
     } else {
       // Wrong answer - game over
-      handleGameOver();
+      handleGameOver('wrong');
     }
   };
 

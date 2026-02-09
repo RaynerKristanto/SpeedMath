@@ -24,12 +24,9 @@ const getDifficultyRange = (difficulty: number = 0): { min: number; max: number 
   } else if (difficulty < 25) {
     // Hard: 5-25
     return { min: 5, max: 25 };
-  } else if (difficulty < 40) {
-    // Very hard: 10-50
-    return { min: 10, max: 50 };
   } else {
-    // Expert: 10-99
-    return { min: 10, max: 99 };
+    // Very hard: 10-50
+    return { min: 10, max: 49 };
   }
 };
 

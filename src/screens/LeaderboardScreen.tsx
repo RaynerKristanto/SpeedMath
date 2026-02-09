@@ -17,10 +17,11 @@ import {
 } from '../services/leaderboardService';
 
 interface LeaderboardScreenProps {
+  timeLimit: number;
   onBack: () => void;
 }
 
-export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onBack }) => {
+export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ timeLimit, onBack }) => {
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -45,7 +46,7 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onBack }) 
   useEffect(() => {
     const init = async () => {
       if (Platform.OS === 'ios' && isGameCenterAuthenticated()) {
-        const shown = await showNativeLeaderboard();
+        const shown = await showNativeLeaderboard(timeLimit);
         if (shown) {
           onBack();
           return;
