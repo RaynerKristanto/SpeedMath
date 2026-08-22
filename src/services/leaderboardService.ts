@@ -3,6 +3,7 @@ import GameCenter from '../../modules/expo-game-center';
 import type { AuthResult, SubmitResult } from '../../modules/expo-game-center';
 import * as localLeaderboard from './localLeaderboardService';
 import type { LeaderboardEntry } from '../types/leaderboard';
+import type { TranslationKey } from '../i18n/translations';
 
 const LEADERBOARD_IDS: Record<number, string> = {
   1000: 'scores',
@@ -54,28 +55,32 @@ export const submitScore = async (
   score: number,
   username?: string,
   timeLimit?: number
-): Promise<{ success: boolean; error?: string }> => {
+): Promise<{ success: boolean; errorKey?: TranslationKey }> => {
   if (isGameCenterAvailable() && isGameCenterAuthenticated()) {
     const leaderboardID = getLeaderboardID(timeLimit);
     if (!leaderboardID) {
-      return { success: false, error: 'No leaderboard for this time limit' };
+      return { success: false, errorKey: 'errorNoLeaderboardForTimeLimit' };
     }
     try {
       const result: SubmitResult = await GameCenter!.submitScore(
         score,
         leaderboardID
       );
-      return { success: result.success, error: result.error ?? undefined };
-    } catch (error: any) {
+      return {
+        success: result.success,
+        errorKey: result.success ? undefined : 'errorGameCenterSubmitFailed',
+      };
+    } catch (error) {
+      console.warn('Game Center submit failed:', error);
       return {
         success: false,
-        error: error.message || 'Failed to submit to Game Center',
+        errorKey: 'errorGameCenterSubmitFailed',
       };
     }
   }
 
   if (!username) {
-    return { success: false, error: 'Username required for local leaderboard' };
+    return { success: false, errorKey: 'errorUsernameRequired' };
   }
   return localLeaderboard.submitScore(username, score);
 };

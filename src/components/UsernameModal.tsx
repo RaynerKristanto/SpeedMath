@@ -11,6 +11,7 @@ import {
   Platform,
 } from 'react-native';
 import { validateUsername } from '../services/localLeaderboardService';
+import { useTranslation } from '../i18n/LanguageContext';
 
 interface UsernameModalProps {
   visible: boolean;
@@ -27,6 +28,7 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({
   onCancel,
   isSubmitting,
 }) => {
+  const { t } = useTranslation();
   const [username, setUsername] = useState('');
   const [error, setError] = useState('');
 
@@ -34,7 +36,7 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({
     // Validate username
     const validation = validateUsername(username);
     if (!validation.valid) {
-      setError(validation.error || 'Invalid username');
+      setError(t(validation.errorKey ?? 'errorInvalidUsername'));
       return;
     }
 
@@ -67,19 +69,19 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({
         style={styles.overlay}
       >
         <View style={styles.modalContainer}>
-          <Text style={styles.title}>Submit to Leaderboard</Text>
+          <Text style={styles.title}>{t('submitToLeaderboard')}</Text>
 
           <View style={styles.scoreContainer}>
-            <Text style={styles.scoreLabel}>Your Score</Text>
+            <Text style={styles.scoreLabel}>{t('yourScore')}</Text>
             <Text style={styles.scoreValue}>{score}</Text>
           </View>
 
-          <Text style={styles.inputLabel}>Enter your name:</Text>
+          <Text style={styles.inputLabel}>{t('enterYourName')}</Text>
           <TextInput
             style={[styles.input, error ? styles.inputError : null]}
             value={username}
             onChangeText={handleUsernameChange}
-            placeholder="Username"
+            placeholder={t('usernamePlaceholder')}
             placeholderTextColor="#666"
             maxLength={20}
             autoFocus
@@ -91,7 +93,7 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({
 
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-          <Text style={styles.hint}>3-20 characters (letters, numbers, spaces, _)</Text>
+          <Text style={styles.hint}>{t('usernameHint')}</Text>
 
           <View style={styles.buttonsContainer}>
             <TouchableOpacity
@@ -103,7 +105,7 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({
               {isSubmitting ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text style={styles.buttonText}>Submit</Text>
+                <Text style={styles.buttonText}>{t('submit')}</Text>
               )}
             </TouchableOpacity>
 
@@ -113,7 +115,7 @@ export const UsernameModal: React.FC<UsernameModalProps> = ({
               disabled={isSubmitting}
               activeOpacity={0.8}
             >
-              <Text style={styles.buttonText}>Skip</Text>
+              <Text style={styles.buttonText}>{t('skip')}</Text>
             </TouchableOpacity>
           </View>
         </View>

@@ -1,12 +1,15 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { AnimatedGradientBackground } from '../components/AnimatedGradientBackground';
+import { useTranslation } from '../i18n/LanguageContext';
+import { NO_TIME_LIMIT } from '../types/game';
 
 interface HomeScreenProps {
   onStartGame: () => void;
   onMultiplayer: () => void;
   onSettings: () => void;
   onLeaderboard: () => void;
+  timeLimit: number;
 }
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({
@@ -14,7 +17,16 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onMultiplayer,
   onSettings,
   onLeaderboard,
+  timeLimit,
 }) => {
+  const { t } = useTranslation();
+  const seconds = timeLimit / 1000;
+  const timeRule =
+    timeLimit === NO_TIME_LIMIT
+      ? t('ruleNoTimeLimit')
+      : seconds === 1
+        ? t('ruleAnswerWithinOne')
+        : t('ruleAnswerWithin', { seconds });
   const styles = StyleSheet.create({
     container: {
       flexGrow: 1,
@@ -93,8 +105,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     <AnimatedGradientBackground>
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.titleContainer}>
-          <Text style={styles.title}>Speed Math</Text>
-          <Text style={styles.subtitle}>Can you beat the clock?</Text>
+          <Text style={styles.title}>{t('appTitle')}</Text>
+          <Text style={styles.subtitle}>{t('appSubtitle')}</Text>
         </View>
 
         <View style={styles.menuContainer}>
@@ -104,7 +116,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             activeOpacity={0.8}
           >
             <Text style={styles.buttonIcon}>🎮</Text>
-            <Text style={styles.buttonText}>Play Solo</Text>
+            <Text style={styles.buttonText}>{t('playSolo')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -113,7 +125,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             activeOpacity={0.8}
           >
             <Text style={styles.buttonIcon}>👥</Text>
-            <Text style={styles.buttonText}>Local 2-Player</Text>
+            <Text style={styles.buttonText}>{t('localTwoPlayer')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -122,7 +134,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             activeOpacity={0.8}
           >
             <Text style={styles.buttonIcon}>🏆</Text>
-            <Text style={styles.buttonText}>Leaderboard</Text>
+            <Text style={styles.buttonText}>{t('leaderboard')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -131,14 +143,14 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             activeOpacity={0.8}
           >
             <Text style={styles.buttonIcon}>⚙️</Text>
-            <Text style={styles.buttonText}>Settings</Text>
+            <Text style={styles.buttonText}>{t('settings')}</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.infoContainer}>
-          <Text style={styles.infoText}>• Answer within 1 second</Text>
-          <Text style={styles.infoText}>• Each correct answer = +1 point</Text>
-          <Text style={styles.infoText}>• One mistake = Game Over</Text>
+          <Text style={styles.infoText}>{timeRule}</Text>
+          <Text style={styles.infoText}>{t('ruleScoring')}</Text>
+          <Text style={styles.infoText}>{t('ruleMistake')}</Text>
         </View>
       </ScrollView>
     </AnimatedGradientBackground>

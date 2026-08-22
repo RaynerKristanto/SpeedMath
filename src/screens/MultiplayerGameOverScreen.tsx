@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useTranslation } from '../i18n/LanguageContext';
 
 interface MultiplayerGameOverScreenProps {
   player1Score: number;
@@ -11,10 +12,12 @@ interface MultiplayerGameOverScreenProps {
 export const MultiplayerGameOverScreen: React.FC<
   MultiplayerGameOverScreenProps
 > = ({ player1Score, player2Score, onPlayAgain, onBackToMenu }) => {
+  const { t } = useTranslation();
+
   const getWinner = () => {
-    if (player1Score > player2Score) return 'Player 1 Wins!';
-    if (player2Score > player1Score) return 'Player 2 Wins!';
-    return "It's a Tie!";
+    if (player1Score > player2Score) return t('player1Wins');
+    if (player2Score > player1Score) return t('player2Wins');
+    return t('itsATie');
   };
 
   const getWinnerColor = () => {
@@ -26,7 +29,7 @@ export const MultiplayerGameOverScreen: React.FC<
     <View style={styles.container}>
       <View style={styles.scoresContainer}>
         <View style={styles.playerScoreBox}>
-          <Text style={styles.playerLabel}>Player 1</Text>
+          <Text style={styles.playerLabel}>{t('player1')}</Text>
           <Text
             style={[
               styles.scoreValue,
@@ -37,10 +40,10 @@ export const MultiplayerGameOverScreen: React.FC<
           </Text>
         </View>
 
-        <Text style={styles.vs}>VS</Text>
+        <Text style={styles.vs}>{t('versus')}</Text>
 
         <View style={styles.playerScoreBox}>
-          <Text style={styles.playerLabel}>Player 2</Text>
+          <Text style={styles.playerLabel}>{t('player2')}</Text>
           <Text
             style={[
               styles.scoreValue,
@@ -62,7 +65,7 @@ export const MultiplayerGameOverScreen: React.FC<
           onPress={onPlayAgain}
           activeOpacity={0.8}
         >
-          <Text style={styles.buttonText}>Play Again</Text>
+          <Text style={styles.buttonText}>{t('playAgain')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -70,7 +73,7 @@ export const MultiplayerGameOverScreen: React.FC<
           onPress={onBackToMenu}
           activeOpacity={0.8}
         >
-          <Text style={styles.buttonText}>Main Menu</Text>
+          <Text style={styles.buttonText}>{t('mainMenu')}</Text>
         </TouchableOpacity>
       </View>
     </View>

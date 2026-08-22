@@ -15,6 +15,7 @@ import {
   showNativeLeaderboard,
   isGameCenterAuthenticated,
 } from '../services/leaderboardService';
+import { useTranslation } from '../i18n/LanguageContext';
 
 interface LeaderboardScreenProps {
   timeLimit: number;
@@ -22,6 +23,7 @@ interface LeaderboardScreenProps {
 }
 
 export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ timeLimit, onBack }) => {
+  const { t } = useTranslation();
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -100,8 +102,8 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ timeLimit,
   const renderEmptyState = () => (
     <View style={styles.emptyContainer}>
       <Text style={styles.emptyEmoji}>🏆</Text>
-      <Text style={styles.emptyTitle}>No Scores Yet</Text>
-      <Text style={styles.emptyText}>Play a game and submit your score to see it here!</Text>
+      <Text style={styles.emptyTitle}>{t('noScoresYet')}</Text>
+      <Text style={styles.emptyText}>{t('noScoresBody')}</Text>
     </View>
   );
 
@@ -109,13 +111,13 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ timeLimit,
     return (
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.title}>🏆 Leaderboard</Text>
+          <Text style={styles.title}>{t('leaderboardTitle')}</Text>
         </View>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#4CAF50" />
         </View>
         <TouchableOpacity style={styles.backButton} onPress={onBack} activeOpacity={0.8}>
-          <Text style={styles.backButtonText}>Back to Menu</Text>
+          <Text style={styles.backButtonText}>{t('backToMenu')}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -124,10 +126,10 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ timeLimit,
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>🏆 Leaderboard</Text>
-        <Text style={styles.subtitle}>Top 10 Scores</Text>
+        <Text style={styles.title}>{t('leaderboardTitle')}</Text>
+        <Text style={styles.subtitle}>{t('topTenScores')}</Text>
         <Text style={styles.disclaimer}>
-          Stored locally on this device. Clearing app data or reinstalling will reset scores. Download the iOS app for online leaderboards!
+          {t('leaderboardDisclaimer')}
         </Text>
       </View>
 
@@ -149,7 +151,7 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ timeLimit,
       />
 
       <TouchableOpacity style={styles.backButton} onPress={onBack} activeOpacity={0.8}>
-        <Text style={styles.backButtonText}>Back to Menu</Text>
+        <Text style={styles.backButtonText}>{t('backToMenu')}</Text>
       </TouchableOpacity>
     </View>
   );

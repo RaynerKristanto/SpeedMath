@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { Equation, NO_TIME_LIMIT } from '../types/game';
 import { generateEquation } from '../utils/equationGenerator';
+import { useTranslation } from '../i18n/LanguageContext';
 
 const { width } = Dimensions.get('window');
 
@@ -21,6 +22,7 @@ interface CompetitiveMultiplayerGameScreenProps {
 export const CompetitiveMultiplayerGameScreen: React.FC<
   CompetitiveMultiplayerGameScreenProps
 > = ({ onGameOver, timeLimit, trueButtonOnLeft }) => {
+  const { t } = useTranslation();
   // Initial shared equation (difficulty 0)
   const initialEquation = generateEquation(0);
   const isTimed = timeLimit !== NO_TIME_LIMIT;
@@ -213,7 +215,7 @@ export const CompetitiveMultiplayerGameScreen: React.FC<
 
         <View style={styles.scoreContainer}>
           <Text style={styles.playerLabel}>
-            Player 2 {!p2Active && '(OUT)'}
+            {t('player2')} {!p2Active && t('playerOut')}
           </Text>
           <Text style={[styles.scoreValue, !p2Active && styles.inactiveScore]}>
             {p2Score}
@@ -233,7 +235,7 @@ export const CompetitiveMultiplayerGameScreen: React.FC<
                 {p2Equation.result}
               </>
             ) : (
-              'ELIMINATED'
+              t('eliminated')
             )}
           </Text>
         </View>
@@ -247,7 +249,7 @@ export const CompetitiveMultiplayerGameScreen: React.FC<
                 activeOpacity={0.7}
                 disabled={!p2Active}
               >
-                <Text style={styles.buttonText}>TRUE</Text>
+                <Text style={styles.buttonText}>{t('answerTrue')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -256,7 +258,7 @@ export const CompetitiveMultiplayerGameScreen: React.FC<
                 activeOpacity={0.7}
                 disabled={!p2Active}
               >
-                <Text style={styles.buttonText}>FALSE</Text>
+                <Text style={styles.buttonText}>{t('answerFalse')}</Text>
               </TouchableOpacity>
             </>
           ) : (
@@ -267,7 +269,7 @@ export const CompetitiveMultiplayerGameScreen: React.FC<
                 activeOpacity={0.7}
                 disabled={!p2Active}
               >
-                <Text style={styles.buttonText}>FALSE</Text>
+                <Text style={styles.buttonText}>{t('answerFalse')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -276,7 +278,7 @@ export const CompetitiveMultiplayerGameScreen: React.FC<
                 activeOpacity={0.7}
                 disabled={!p2Active}
               >
-                <Text style={styles.buttonText}>TRUE</Text>
+                <Text style={styles.buttonText}>{t('answerTrue')}</Text>
               </TouchableOpacity>
             </>
           )}
@@ -309,7 +311,7 @@ export const CompetitiveMultiplayerGameScreen: React.FC<
 
         <View style={styles.scoreContainer}>
           <Text style={styles.playerLabel}>
-            Player 1 {!p1Active && '(OUT)'}
+            {t('player1')} {!p1Active && t('playerOut')}
           </Text>
           <Text style={[styles.scoreValue, !p1Active && styles.inactiveScore]}>
             {p1Score}
@@ -329,7 +331,7 @@ export const CompetitiveMultiplayerGameScreen: React.FC<
                 {p1Equation.result}
               </>
             ) : (
-              'ELIMINATED'
+              t('eliminated')
             )}
           </Text>
         </View>
@@ -343,7 +345,7 @@ export const CompetitiveMultiplayerGameScreen: React.FC<
                 activeOpacity={0.7}
                 disabled={!p1Active}
               >
-                <Text style={styles.buttonText}>TRUE</Text>
+                <Text style={styles.buttonText}>{t('answerTrue')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -352,7 +354,7 @@ export const CompetitiveMultiplayerGameScreen: React.FC<
                 activeOpacity={0.7}
                 disabled={!p1Active}
               >
-                <Text style={styles.buttonText}>FALSE</Text>
+                <Text style={styles.buttonText}>{t('answerFalse')}</Text>
               </TouchableOpacity>
             </>
           ) : (
@@ -363,7 +365,7 @@ export const CompetitiveMultiplayerGameScreen: React.FC<
                 activeOpacity={0.7}
                 disabled={!p1Active}
               >
-                <Text style={styles.buttonText}>FALSE</Text>
+                <Text style={styles.buttonText}>{t('answerFalse')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -372,7 +374,7 @@ export const CompetitiveMultiplayerGameScreen: React.FC<
                 activeOpacity={0.7}
                 disabled={!p1Active}
               >
-                <Text style={styles.buttonText}>TRUE</Text>
+                <Text style={styles.buttonText}>{t('answerTrue')}</Text>
               </TouchableOpacity>
             </>
           )}

@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { Equation, NO_TIME_LIMIT } from '../types/game';
 import { generateEquation } from '../utils/equationGenerator';
+import { useTranslation } from '../i18n/LanguageContext';
 
 const { width, height } = Dimensions.get('window');
 
@@ -29,6 +30,7 @@ interface GameScreenProps {
 }
 
 export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver, timeLimit, trueButtonOnLeft }) => {
+  const { t } = useTranslation();
   const [equation, setEquation] = useState<Equation>(generateEquation());
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(timeLimit);
@@ -109,7 +111,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver, timeLimit, t
     <View style={styles.container}>
       {/* Score */}
       <View style={styles.scoreContainer}>
-        <Text style={styles.scoreLabel}>Score</Text>
+        <Text style={styles.scoreLabel}>{t('score')}</Text>
         <Text style={styles.scoreValue}>{score}</Text>
       </View>
 
@@ -144,7 +146,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver, timeLimit, t
               onPress={() => handleAnswer(true)}
               activeOpacity={0.7}
             >
-              <Text style={styles.buttonText}>TRUE</Text>
+              <Text style={styles.buttonText}>{t('answerTrue')}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -152,7 +154,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver, timeLimit, t
               onPress={() => handleAnswer(false)}
               activeOpacity={0.7}
             >
-              <Text style={styles.buttonText}>FALSE</Text>
+              <Text style={styles.buttonText}>{t('answerFalse')}</Text>
             </TouchableOpacity>
           </>
         ) : (
@@ -162,7 +164,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver, timeLimit, t
               onPress={() => handleAnswer(false)}
               activeOpacity={0.7}
             >
-              <Text style={styles.buttonText}>FALSE</Text>
+              <Text style={styles.buttonText}>{t('answerFalse')}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -170,7 +172,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver, timeLimit, t
               onPress={() => handleAnswer(true)}
               activeOpacity={0.7}
             >
-              <Text style={styles.buttonText}>TRUE</Text>
+              <Text style={styles.buttonText}>{t('answerTrue')}</Text>
             </TouchableOpacity>
           </>
         )}

@@ -9,6 +9,8 @@ import { MultiplayerGameOverScreen } from './src/screens/MultiplayerGameOverScre
 import { SettingsScreen } from './src/screens/SettingsScreen';
 import { LeaderboardScreen } from './src/screens/LeaderboardScreen';
 import { authenticateGameCenter } from './src/services/leaderboardService';
+import { LanguageProvider } from './src/i18n/LanguageContext';
+import { NO_TIME_LIMIT } from './src/types/game';
 
 type Screen =
   | 'home'
@@ -27,6 +29,8 @@ export default function App() {
   const [player1Score, setPlayer1Score] = useState(0);
   const [player2Score, setPlayer2Score] = useState(0);
   const [timeLimit, setTimeLimit] = useState(1000);
+  // Restored when the player turns the no-time-limit toggle back off.
+  const [lastTimedLimit, setLastTimedLimit] = useState(1000);
   const [trueButtonOnLeft, setTrueButtonOnLeft] = useState(true);
   const fadeAnim = useRef(new Animated.Value(1)).current;
 
@@ -83,6 +87,9 @@ export default function App() {
 
   const handleTimeLimitChange = (newTimeLimit: number) => {
     setTimeLimit(newTimeLimit);
+    if (newTimeLimit !== NO_TIME_LIMIT) {
+      setLastTimedLimit(newTimeLimit);
+    }
   };
 
   const handleButtonLayoutChange = (trueOnLeft: boolean) => {
@@ -102,6 +109,7 @@ export default function App() {
             onMultiplayer={handleMultiplayer}
             onSettings={handleSettings}
             onLeaderboard={handleLeaderboard}
+            timeLimit={timeLimit}
           />
         );
       case 'game':
@@ -138,6 +146,7 @@ export default function App() {
         return (
           <SettingsScreen
             currentTimeLimit={timeLimit}
+            lastTimedLimit={lastTimedLimit}
             onTimeLimitChange={handleTimeLimitChange}
             trueButtonOnLeft={trueButtonOnLeft}
             onButtonLayoutChange={handleButtonLayoutChange}
@@ -153,20 +162,23 @@ export default function App() {
             onMultiplayer={handleMultiplayer}
             onSettings={handleSettings}
             onLeaderboard={handleLeaderboard}
+            timeLimit={timeLimit}
           />
         );
     }
   };
 
   return (
-    <View style={styles.outerContainer}>
-      <View style={styles.container}>
-        <StatusBar style="light" />
-        <Animated.View style={[styles.screenContainer, { opacity: fadeAnim }]}>
-          {renderScreen()}
-        </Animated.View>
+    <LanguageProvider>
+      <View style={styles.outerContainer}>
+        <View style={styles.container}>
+          <StatusBar style="light" />
+          <Animated.View style={[styles.screenContainer, { opacity: fadeAnim }]}>
+            {renderScreen()}
+          </Animated.View>
+        </View>
       </View>
-    </View>
+    </LanguageProvider>
   );
 }
 

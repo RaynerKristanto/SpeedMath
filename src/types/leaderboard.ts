@@ -1,3 +1,5 @@
+import type { TranslationKey } from '../i18n/translations';
+
 export interface LeaderboardEntry {
   username: string;
   score: number;
@@ -7,5 +9,5 @@ export interface LeaderboardEntry {
 
 export interface ValidationResult {
   valid: boolean;
-  error?: string;
+  errorKey?: TranslationKey;
 }

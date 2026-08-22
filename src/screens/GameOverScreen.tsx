@@ -3,6 +3,8 @@ import { View, Text, TouchableOpacity, StyleSheet, Platform, ScrollView } from '
 import { UsernameModal } from '../components/UsernameModal';
 import { submitScore, isGameCenterAuthenticated, fetchPlayerBestScore, isLeaderboardSupported } from '../services/leaderboardService';
 import { LastEquation, GameEndReason } from './GameScreen';
+import { useTranslation } from '../i18n/LanguageContext';
+import type { MessageTier, TranslationKey } from '../i18n/translations';
 
 interface GameOverScreenProps {
   score: number;
@@ -21,10 +23,11 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
   onPlayAgain,
   onBackToMenu,
 }) => {
+  const { t, messagesForTier } = useTranslation();
   const [showUsernameModal, setShowUsernameModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [submitError, setSubmitError] = useState('');
+  const [submitErrorKey, setSubmitErrorKey] = useState<TranslationKey | null>(null);
   const [bestScore, setBestScore] = useState<number | null>(null);
 
   const useGameCenter = Platform.OS === 'ios' && isGameCenterAuthenticated();
@@ -35,7 +38,7 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
         if (result.success) {
           setSubmitSuccess(true);
         } else {
-          setSubmitError(result.error || 'Failed to submit score');
+          setSubmitErrorKey(result.errorKey ?? 'errorSubmitFailed');
         }
       });
       fetchPlayerBestScore(timeLimit).then((result) => {
@@ -46,7 +49,7 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
 
   const handleSubmitScore = async (username: string) => {
     setIsSubmitting(true);
-    setSubmitError('');
+    setSubmitErrorKey(null);
 
     const result = await submitScore(score, username, timeLimit);
 
@@ -56,63 +59,30 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
       setSubmitSuccess(true);
       setShowUsernameModal(false);
     } else {
-      setSubmitError(result.error || 'Failed to submit score');
+      setSubmitErrorKey(result.errorKey ?? 'errorSubmitFailed');
     }
   };
 
   const handleShowModal = () => {
     setShowUsernameModal(true);
     setSubmitSuccess(false);
-    setSubmitError('');
+    setSubmitErrorKey(null);
   };
   const grade = score >= 300 ? 'S+++' : score >= 200 ? 'S++' : score >= 100 ? 'S' : score >= 40 ? 'A' : score >= 20 ? 'B' : score >= 10 ? 'C' : 'F';
   const gradeColor = score >= 200 ? '#FF2D55' : score >= 100 ? '#AF52DE' : score >= 40 ? '#FFD700' : score >= 20 ? '#4CAF50' : score >= 10 ? '#2196F3' : '#ff4444';
 
-  const [message] = useState(() => {
-    const pick = (msgs: string[]) => msgs[Math.floor(Math.random() * msgs.length)];
+  const messageTier: MessageTier =
+    score >= 300 ? 'sPlusPlusPlus'
+    : score >= 200 ? 'sPlusPlus'
+    : score >= 100 ? 's'
+    : score >= 40 ? 'a'
+    : score >= 20 ? 'b'
+    : score >= 10 ? 'c'
+    : 'f';
 
-    if (score >= 300) return pick([
-      "Take my\uD83D\uDCB0 and don't go any higher",
-    ]);
-    if (score >= 200) return pick([
-      "\uD83E\uDD2F someone check this run",
-      "You are \uD83E\uDD16",
-    ]);
-    if (score >= 100) return pick([
-      "top 1% behavior",
-      "you're built different",
-      "main character moment",
-      "clip this",
-    ]);
-    if (score >= 40) return pick([
-      "certified solid run",
-      "Good but not top tier",
-      "You're locked in",
-      "this is above above average",
-    ]);
-    if (score >= 20) return pick([
-      "respectable performance",
-      "not bad at all actually",
-      "lowkey solid",
-      "not cracked, but capable",
-    ]);
-    if (score >= 10) return pick([
-      "nothing to screenshot",
-      "Mid",
-      "you weren't guessing the whole time",
-      "this could go somewhere",
-      "a few neurons connected",
-    ]);
-    return pick([
-      "Numbers are hard. It's okay.",
-      "We'll keep this a secret from your friends",
-      "the equation watching you answer: \uD83D\uDC41\uFE0F\uD83D\uDC44\uD83D\uDC41\uFE0F",
-      "Even my grandma can get 10",
-      "the scoreboard is judging silently",
-      "you got this next run trust",
-      "As good as my monkey!",
-    ]);
-  });
+  const tierMessages = messagesForTier(messageTier);
+  const [messageIndex] = useState(() => Math.floor(Math.random() * tierMessages.length));
+  const message = tierMessages[messageIndex % tierMessages.length];
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -124,23 +94,23 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
       </View>
 
       <View style={styles.scoreContainer}>
-        <Text style={styles.scoreLabel}>Final Score</Text>
+        <Text style={styles.scoreLabel}>{t('finalScore')}</Text>
         <Text style={styles.scoreValue}>{score}</Text>
         {bestScore !== null && (
-          <Text style={styles.bestScoreText}>Best: {bestScore}</Text>
+          <Text style={styles.bestScoreText}>{t('bestScore', { score: bestScore })}</Text>
         )}
       </View>
 
       {lastEquation && (
         <View style={styles.lastEquationContainer}>
           <Text style={styles.endReasonText}>
-            {endReason === 'timeout' ? '⏱️ Time ran out' : '❌ Wrong answer'}
+            {endReason === 'timeout' ? t('timeRanOut') : t('wrongAnswer')}
           </Text>
           <Text style={styles.lastEquationText}>
             {lastEquation.left} {lastEquation.operator} {lastEquation.right} = {lastEquation.result}
           </Text>
           <Text style={styles.correctAnswerText}>
-            {lastEquation.isCorrect ? 'This was TRUE' : 'This was FALSE'}
+            {lastEquation.isCorrect ? t('thisWasTrue') : t('thisWasFalse')}
           </Text>
         </View>
       )}
@@ -152,19 +122,19 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
             onPress={handleShowModal}
             activeOpacity={0.8}
           >
-            <Text style={styles.buttonText}>📝 Submit to Local Leaderboard</Text>
+            <Text style={styles.buttonText}>{t('submitToLocalLeaderboard')}</Text>
           </TouchableOpacity>
         )}
 
         {submitSuccess && !useGameCenter && (
           <View style={styles.successContainer}>
-            <Text style={styles.successText}>✅ Score submitted!</Text>
+            <Text style={styles.successText}>{t('scoreSubmitted')}</Text>
           </View>
         )}
 
-        {submitError && !useGameCenter && (
+        {submitErrorKey && !useGameCenter && (
           <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>{submitError}</Text>
+            <Text style={styles.errorText}>{t(submitErrorKey)}</Text>
           </View>
         )}
 
@@ -173,7 +143,7 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
           onPress={onPlayAgain}
           activeOpacity={0.8}
         >
-          <Text style={styles.buttonText}>Play Again</Text>
+          <Text style={styles.buttonText}>{t('playAgain')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -181,7 +151,7 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
           onPress={onBackToMenu}
           activeOpacity={0.8}
         >
-          <Text style={styles.buttonText}>Main Menu</Text>
+          <Text style={styles.buttonText}>{t('mainMenu')}</Text>
         </TouchableOpacity>
       </View>
 

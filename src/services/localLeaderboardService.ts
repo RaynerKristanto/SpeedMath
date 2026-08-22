@@ -1,12 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LeaderboardEntry, ValidationResult } from '../types/leaderboard';
+import type { TranslationKey } from '../i18n/translations';
 
 const LEADERBOARD_KEY = '@speed_math_leaderboard';
 const MAX_ENTRIES = 10;
 
 /**
  * Validate username
- * Must be 3-20 characters, alphanumeric + spaces and underscores only
+ * Must be 3-20 characters, alphanumeric + Chinese, spaces and underscores only
  */
 export const validateUsername = (username: string): ValidationResult => {
   const trimmed = username.trim();
@@ -14,23 +15,23 @@ export const validateUsername = (username: string): ValidationResult => {
   if (trimmed.length < 3) {
     return {
       valid: false,
-      error: 'Username must be at least 3 characters',
+      errorKey: 'errorUsernameTooShort',
     };
   }
 
   if (trimmed.length > 20) {
     return {
       valid: false,
-      error: 'Username must be 20 characters or less',
+      errorKey: 'errorUsernameTooLong',
     };
   }
 
-  // Allow alphanumeric, spaces, and underscores only
-  const validPattern = /^[a-zA-Z0-9_ ]+$/;
+  // Allow alphanumeric, CJK ideographs, spaces, and underscores only
+  const validPattern = /^[a-zA-Z0-9_ \u4e00-\u9fff]+$/;
   if (!validPattern.test(trimmed)) {
     return {
       valid: false,
-      error: 'Username can only contain letters, numbers, spaces, and underscores',
+      errorKey: 'errorUsernameInvalidChars',
     };
   }
 
@@ -77,14 +78,14 @@ export const getLeaderboard = async (): Promise<LeaderboardEntry[]> => {
 export const submitScore = async (
   username: string,
   score: number
-): Promise<{ success: boolean; error?: string }> => {
+): Promise<{ success: boolean; errorKey?: TranslationKey }> => {
   try {
     // Validate username
     const validation = validateUsername(username);
     if (!validation.valid) {
       return {
         success: false,
-        error: validation.error,
+        errorKey: validation.errorKey,
       };
     }
 
@@ -92,7 +93,7 @@ export const submitScore = async (
     if (score < 0) {
       return {
         success: false,
-        error: 'Invalid score',
+        errorKey: 'errorInvalidScore',
       };
     }
 
@@ -128,7 +129,7 @@ export const submitScore = async (
     console.error('Error submitting score:', error);
     return {
       success: false,
-      error: 'Failed to save score. Please try again.',
+      errorKey: 'errorSaveFailed',
     };
   }
 };

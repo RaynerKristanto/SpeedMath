@@ -7,6 +7,9 @@ const randomInt = (min: number, max: number): number => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
+/** A wrong result is never off by 10 or more, which would be too easy to spot. */
+const MAX_WRONG_OFFSET = 9;
+
 /**
  * Gets the difficulty range based on the current score/question number
  * Starts easy and progressively gets harder
@@ -47,8 +50,8 @@ export const generateEquation = (difficulty: number = 0): Equation => {
   let displayedResult = correctResult;
 
   if (!isCorrect) {
-    // Generate an incorrect result (off by 1-5 for easier, 1-10 for harder)
-    const maxOffset = difficulty < 10 ? 3 : difficulty < 25 ? 5 : 10;
+    // Generate an incorrect result, always off by less than 10
+    const maxOffset = difficulty < 10 ? 3 : difficulty < 25 ? 5 : MAX_WRONG_OFFSET;
     const offset = randomInt(1, maxOffset) * (Math.random() < 0.5 ? 1 : -1);
     displayedResult = correctResult + offset;
 
