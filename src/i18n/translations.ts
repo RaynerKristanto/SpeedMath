@@ -106,16 +106,16 @@ const zh: Record<keyof typeof en, string> = {
 
   // Game
   score: '得分',
-  answerTrue: '正确',
-  answerFalse: '错误',
+  answerTrue: '对',
+  answerFalse: '错',
 
   // Game over
   finalScore: '最终得分',
   bestScore: '最佳：{score}',
   timeRanOut: '⏱️ 时间到了',
   wrongAnswer: '❌ 答错了',
-  thisWasTrue: '这题是“正确”',
-  thisWasFalse: '这题是“错误”',
+  thisWasTrue: '这题是对的',
+  thisWasFalse: '这题是错的',
   submitToLocalLeaderboard: '📝 提交到本地排行榜',
   scoreSubmitted: '✅ 成绩已提交！',
   playAgain: '再来一局',
@@ -127,9 +127,9 @@ const zh: Record<keyof typeof en, string> = {
   secondsShort: '{count}秒',
   noTimeLimit: '不限时间',
   buttonLayout: '按钮布局',
-  buttonLayoutDescription: '“正确”和“错误”按钮的位置',
-  trueOnLeft: '正确在左',
-  trueOnRight: '正确在右',
+  buttonLayoutDescription: '“对”和“错”按钮的位置',
+  trueOnLeft: '“对”在左',
+  trueOnRight: '“对”在右',
   language: '语言',
   languageDescription: '全应用使用的语言',
   backToMenu: '返回菜单',
