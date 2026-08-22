@@ -4,10 +4,19 @@ import type { AuthResult, SubmitResult } from '../../modules/expo-game-center';
 import * as localLeaderboard from './localLeaderboardService';
 import type { LeaderboardEntry } from '../types/leaderboard';
 
-const getLeaderboardID = (timeLimit?: number): string => {
-  if (timeLimit === 2000) return 'scores_2s';
-  return 'scores';
+const LEADERBOARD_IDS: Record<number, string> = {
+  1000: 'scores',
+  2000: 'scores_2s',
 };
+
+const getLeaderboardID = (timeLimit?: number): string | null => {
+  if (timeLimit === undefined) return 'scores';
+  return LEADERBOARD_IDS[timeLimit] ?? null;
+};
+
+/** Game Center only has boards for the 1s and 2s modes. */
+export const isLeaderboardSupported = (timeLimit?: number): boolean =>
+  getLeaderboardID(timeLimit) !== null;
 
 const isGameCenterAvailable = (): boolean => {
   return Platform.OS === 'ios' && GameCenter != null;
@@ -47,10 +56,14 @@ export const submitScore = async (
   timeLimit?: number
 ): Promise<{ success: boolean; error?: string }> => {
   if (isGameCenterAvailable() && isGameCenterAuthenticated()) {
+    const leaderboardID = getLeaderboardID(timeLimit);
+    if (!leaderboardID) {
+      return { success: false, error: 'No leaderboard for this time limit' };
+    }
     try {
       const result: SubmitResult = await GameCenter!.submitScore(
         score,
-        getLeaderboardID(timeLimit)
+        leaderboardID
       );
       return { success: result.success, error: result.error ?? undefined };
     } catch (error: any) {
@@ -71,8 +84,12 @@ export const fetchPlayerBestScore = async (
   timeLimit?: number
 ): Promise<{ score: number | null; rank: number | null }> => {
   if (isGameCenterAvailable() && isGameCenterAuthenticated()) {
+    const leaderboardID = getLeaderboardID(timeLimit);
+    if (!leaderboardID) {
+      return { score: null, rank: null };
+    }
     try {
-      const result = await GameCenter!.fetchPlayerBestScore(getLeaderboardID(timeLimit));
+      const result = await GameCenter!.fetchPlayerBestScore(leaderboardID);
       return { score: result.score, rank: result.rank };
     } catch {
       return { score: null, rank: null };
@@ -83,8 +100,12 @@ export const fetchPlayerBestScore = async (
 
 export const showNativeLeaderboard = async (timeLimit?: number): Promise<boolean> => {
   if (isGameCenterAvailable() && isGameCenterAuthenticated()) {
+    const leaderboardID = getLeaderboardID(timeLimit);
+    if (!leaderboardID) {
+      return false;
+    }
     try {
-      await GameCenter!.showLeaderboard(getLeaderboardID(timeLimit));
+      await GameCenter!.showLeaderboard(leaderboardID);
       return true;
     } catch (error) {
       console.warn('Failed to show Game Center leaderboard:', error);

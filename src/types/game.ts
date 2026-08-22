@@ -14,3 +14,6 @@ export interface GameState {
 }
 
 export type GameMode = 'single' | 'multiplayer';
+
+/** Sentinel time limit meaning the countdown is disabled. */
+export const NO_TIME_LIMIT = 0;

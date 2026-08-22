@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform, ScrollView } from 'react-native';
 import { UsernameModal } from '../components/UsernameModal';
-import { submitScore, isGameCenterAuthenticated, fetchPlayerBestScore } from '../services/leaderboardService';
+import { submitScore, isGameCenterAuthenticated, fetchPlayerBestScore, isLeaderboardSupported } from '../services/leaderboardService';
 import { LastEquation, GameEndReason } from './GameScreen';
 
 interface GameOverScreenProps {
@@ -30,7 +30,7 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
   const useGameCenter = Platform.OS === 'ios' && isGameCenterAuthenticated();
 
   useEffect(() => {
-    if (useGameCenter) {
+    if (useGameCenter && isLeaderboardSupported(timeLimit)) {
       submitScore(score, undefined, timeLimit).then((result) => {
         if (result.success) {
           setSubmitSuccess(true);

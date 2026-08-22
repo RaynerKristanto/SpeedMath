@@ -8,6 +8,8 @@ import {
   ScrollView,
 } from 'react-native';
 
+import { NO_TIME_LIMIT } from '../types/game';
+
 const { width } = Dimensions.get('window');
 
 interface SettingsScreenProps {
@@ -26,10 +28,10 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
   onBack,
 }) => {
 
-  const timeLimitOptions = [
-    { label: '1 Second', value: 1000 },
-    { label: '2 Seconds', value: 2000 },
-  ];
+  const timeLimitOptions = Array.from({ length: 10 }, (_, i) => ({
+    label: `${i + 1}s`,
+    value: (i + 1) * 1000,
+  }));
 
   const buttonLayoutOptions = [
     { label: 'True on Left', value: true },
@@ -75,6 +77,33 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
     },
     optionsContainer: {
       gap: 12,
+    },
+    timeGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 12,
+      marginBottom: 12,
+    },
+    timeChip: {
+      flexGrow: 1,
+      flexBasis: 60,
+      backgroundColor: '#16213e',
+      paddingVertical: 16,
+      borderRadius: 12,
+      alignItems: 'center',
+      borderWidth: 2,
+      borderColor: 'transparent',
+    },
+    timeChipSelected: {
+      borderColor: '#4CAF50',
+    },
+    timeChipText: {
+      fontSize: 18,
+      color: '#fff',
+      fontWeight: '600',
+    },
+    timeChipTextSelected: {
+      color: '#4CAF50',
     },
     optionButton: {
       backgroundColor: '#16213e',
@@ -141,33 +170,51 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
           How long players have to answer each question
         </Text>
 
-        <View style={styles.optionsContainer}>
+        <View style={styles.timeGrid}>
           {timeLimitOptions.map((option) => (
             <TouchableOpacity
               key={option.value}
               style={[
-                styles.optionButton,
-                currentTimeLimit === option.value && styles.optionButtonSelected,
+                styles.timeChip,
+                currentTimeLimit === option.value && styles.timeChipSelected,
               ]}
               onPress={() => onTimeLimitChange(option.value)}
               activeOpacity={0.7}
             >
               <Text
                 style={[
-                  styles.optionText,
-                  currentTimeLimit === option.value && styles.optionTextSelected,
+                  styles.timeChipText,
+                  currentTimeLimit === option.value && styles.timeChipTextSelected,
                 ]}
               >
                 {option.label}
               </Text>
-              {currentTimeLimit === option.value && (
-                <View style={styles.checkmark}>
-                  <Text style={styles.checkmarkText}>✓</Text>
-                </View>
-              )}
             </TouchableOpacity>
           ))}
         </View>
+
+        <TouchableOpacity
+          style={[
+            styles.optionButton,
+            currentTimeLimit === NO_TIME_LIMIT && styles.optionButtonSelected,
+          ]}
+          onPress={() => onTimeLimitChange(NO_TIME_LIMIT)}
+          activeOpacity={0.7}
+        >
+          <Text
+            style={[
+              styles.optionText,
+              currentTimeLimit === NO_TIME_LIMIT && styles.optionTextSelected,
+            ]}
+          >
+            No Time Limit
+          </Text>
+          {currentTimeLimit === NO_TIME_LIMIT && (
+            <View style={styles.checkmark}>
+              <Text style={styles.checkmarkText}>✓</Text>
+            </View>
+          )}
+        </TouchableOpacity>
       </View>
 
       <View style={styles.section}>

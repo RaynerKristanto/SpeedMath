@@ -7,7 +7,7 @@ import {
   Dimensions,
   Animated,
 } from 'react-native';
-import { Equation } from '../types/game';
+import { Equation, NO_TIME_LIMIT } from '../types/game';
 import { generateEquation } from '../utils/equationGenerator';
 
 const { width } = Dimensions.get('window');
@@ -23,6 +23,7 @@ export const CompetitiveMultiplayerGameScreen: React.FC<
 > = ({ onGameOver, timeLimit, trueButtonOnLeft }) => {
   // Initial shared equation (difficulty 0)
   const initialEquation = generateEquation(0);
+  const isTimed = timeLimit !== NO_TIME_LIMIT;
 
   // Player 1 state
   const [p1Equation, setP1Equation] = useState<Equation>(initialEquation);
@@ -46,7 +47,7 @@ export const CompetitiveMultiplayerGameScreen: React.FC<
   useEffect(() => {
     if (!p1Active) return;
 
-    if (p1IsFirstQuestion) {
+    if (p1IsFirstQuestion || !isTimed) {
       p1ProgressAnim.setValue(1);
       return;
     }
@@ -74,13 +75,13 @@ export const CompetitiveMultiplayerGameScreen: React.FC<
         clearInterval(p1TimerRef.current);
       }
     };
-  }, [p1Equation, p1IsFirstQuestion, p1Active, timeLimit]);
+  }, [p1Equation, p1IsFirstQuestion, p1Active, isTimed, timeLimit]);
 
   // Player 2 timer
   useEffect(() => {
     if (!p2Active) return;
 
-    if (p2IsFirstQuestion) {
+    if (p2IsFirstQuestion || !isTimed) {
       p2ProgressAnim.setValue(1);
       return;
     }
@@ -108,7 +109,7 @@ export const CompetitiveMultiplayerGameScreen: React.FC<
         clearInterval(p2TimerRef.current);
       }
     };
-  }, [p2Equation, p2IsFirstQuestion, p2Active, timeLimit]);
+  }, [p2Equation, p2IsFirstQuestion, p2Active, isTimed, timeLimit]);
 
   // Check if both players are out
   useEffect(() => {
@@ -194,15 +195,17 @@ export const CompetitiveMultiplayerGameScreen: React.FC<
         {/* Timer Progress Bar for P2 */}
         <View style={styles.timerBarContainer}>
           {p2Active ? (
-            <Animated.View
-              style={[
-                styles.timerBar,
-                {
-                  width: p2ProgressWidth,
-                  backgroundColor: p2TimeLeft < timeLimit * 0.3 ? '#ff4444' : '#4CAF50',
-                },
-              ]}
-            />
+            isTimed && (
+              <Animated.View
+                style={[
+                  styles.timerBar,
+                  {
+                    width: p2ProgressWidth,
+                    backgroundColor: p2TimeLeft < timeLimit * 0.3 ? '#ff4444' : '#4CAF50',
+                  },
+                ]}
+              />
+            )
           ) : (
             <View style={[styles.timerBar, styles.timerBarInactive]} />
           )}
@@ -288,15 +291,17 @@ export const CompetitiveMultiplayerGameScreen: React.FC<
         {/* Timer Progress Bar for P1 */}
         <View style={styles.timerBarContainer}>
           {p1Active ? (
-            <Animated.View
-              style={[
-                styles.timerBar,
-                {
-                  width: p1ProgressWidth,
-                  backgroundColor: p1TimeLeft < timeLimit * 0.3 ? '#ff4444' : '#4CAF50',
-                },
-              ]}
-            />
+            isTimed && (
+              <Animated.View
+                style={[
+                  styles.timerBar,
+                  {
+                    width: p1ProgressWidth,
+                    backgroundColor: p1TimeLeft < timeLimit * 0.3 ? '#ff4444' : '#4CAF50',
+                  },
+                ]}
+              />
+            )
           ) : (
             <View style={[styles.timerBar, styles.timerBarInactive]} />
           )}

@@ -7,7 +7,7 @@ import {
   Dimensions,
   Animated,
 } from 'react-native';
-import { Equation } from '../types/game';
+import { Equation, NO_TIME_LIMIT } from '../types/game';
 import { generateEquation } from '../utils/equationGenerator';
 
 const { width, height } = Dimensions.get('window');
@@ -35,11 +35,12 @@ export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver, timeLimit, t
   const [isFirstQuestion, setIsFirstQuestion] = useState(true);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const progressAnim = useRef(new Animated.Value(1)).current;
+  const isTimed = timeLimit !== NO_TIME_LIMIT;
 
   // Start timer animation
   useEffect(() => {
-    // Skip timer for the first question
-    if (isFirstQuestion) {
+    // Skip timer for the first question, or when the time limit is turned off
+    if (isFirstQuestion || !isTimed) {
       progressAnim.setValue(1);
       return;
     }
@@ -71,7 +72,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver, timeLimit, t
         clearInterval(timerRef.current);
       }
     };
-  }, [equation, isFirstQuestion, timeLimit]);
+  }, [equation, isFirstQuestion, isTimed, timeLimit]);
 
   const handleGameOver = (reason: GameEndReason) => {
     if (timerRef.current) {
@@ -113,17 +114,19 @@ export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver, timeLimit, t
       </View>
 
       {/* Timer Progress Bar */}
-      <View style={styles.timerBarContainer}>
-        <Animated.View
-          style={[
-            styles.timerBar,
-            {
-              width: progressWidth,
-              backgroundColor: timeLeft < timeLimit * 0.3 ? '#ff4444' : '#4CAF50',
-            },
-          ]}
-        />
-      </View>
+      {isTimed && (
+        <View style={styles.timerBarContainer}>
+          <Animated.View
+            style={[
+              styles.timerBar,
+              {
+                width: progressWidth,
+                backgroundColor: timeLeft < timeLimit * 0.3 ? '#ff4444' : '#4CAF50',
+              },
+            ]}
+          />
+        </View>
+      )}
 
       {/* Equation Display */}
       <View style={styles.equationContainer}>
